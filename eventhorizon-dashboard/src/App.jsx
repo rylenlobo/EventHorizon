@@ -10,7 +10,10 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import Home from "../../client_event_horizon/src/pages/Home";
+import Home from "./pages/Home";
+import AddReport from "./pages/AddReport";
+import DashboardWithGraph from "./pages/DashboardGraph";
+
 
 defineCustomElements(window);
 const PrivateRoute = ({ children }) => {
@@ -21,6 +24,7 @@ const PrivateRoute = ({ children }) => {
 const router = createBrowserRouter([
   {
     path: "/",
+    element :<Home/>,
     children: [
       { index: true, element: <Dashboard/>},
       {
@@ -30,6 +34,10 @@ const router = createBrowserRouter([
       {
         path: "add-event",
         element: <AddEvent />,
+      },
+      {
+        path: "add-report",
+        element: <AddReport />,
       },
       {
         path: "add-passes",
