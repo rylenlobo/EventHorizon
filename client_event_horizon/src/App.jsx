@@ -2,6 +2,8 @@ import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
+  useLocation,
+  useNavigate,
 } from "react-router-dom";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
@@ -18,11 +20,15 @@ import EventBooking from "./pages/EventBooking";
 import { isMobile } from "react-device-detect";
 import { SignUpForm, ScanIdCard, ConfirmDetails } from "./pages/SignUp";
 import { defineCustomElements } from "@ionic/pwa-elements/loader";
+import { useContext, useEffect } from "react";
+import { signUpContext } from "./context/SignUpContext";
 
 defineCustomElements(window);
-const PrivateRoute = ({ children }) => {
+
+const PrivateRouteLogin = ({ children }) => {
   const [user] = useAuthState(auth);
-  return user ? <Navigate to="/" /> : children;
+  const navigate = useNavigate();
+  return user ? navigate("/") : children;
 };
 
 const router = createBrowserRouter([
@@ -34,9 +40,9 @@ const router = createBrowserRouter([
       {
         path: "signin",
         element: (
-          <PrivateRoute>
+          <PrivateRouteLogin>
             <SignIn />
-          </PrivateRoute>
+          </PrivateRouteLogin>
         ),
       },
       {
@@ -82,15 +88,5 @@ function App() {
     </>
   );
 }
-// user
-
-export const ProtectedRoute = ({ children }) => {
-  const user = localStorage.getItem("user");
-  if (user) {
-    return children;
-  } else {
-    return <Navigate to={"/login"} />;
-  }
-};
 
 export default App;
