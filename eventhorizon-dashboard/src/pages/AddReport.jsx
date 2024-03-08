@@ -111,7 +111,7 @@ const AddReport = () => {
       console.error("Error adding report:", error);
     }
   };
-
+ 
   return (
     <div className={classes.all}>
       <Typography variant="h5" gutterBottom>

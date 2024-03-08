@@ -147,6 +147,18 @@ export default function Sidebar({ toggleClose, isOpen }) {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
+          <ListItemButton
+          onClick={() => {
+            navigate("events/5sQAbEfQgN1iWgRQCX94/report");
+            toggleClose();
+          }}>
+            <ListItemIcon>
+              <ConfirmationNumberRoundedIcon fontSize="large" />
+            </ListItemIcon>
+            <ListItemText primary="Event Report" />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
           <ListItemButton>
             <ListItemIcon>
               <WorkHistoryRoundedIcon fontSize="large" />

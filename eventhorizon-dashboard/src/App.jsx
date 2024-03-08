@@ -4,16 +4,15 @@ import { defineCustomElements } from "@ionic/pwa-elements/loader";
 import AddEvent from "./pages/AddEvent";
 import EventBooking from "./pages/EventBooking";
 import AddPasses from "./pages/AddPasses";
+import Home from "./pages/Home";
+import AddReport from "./pages/AddReport";
+import EventReportPage from "./pages/ShowReport"; // Import the EventReportPage component
 
 import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import Home from "./pages/Home";
-import AddReport from "./pages/AddReport";
-import DashboardWithGraph from "./pages/DashboardGraph";
-
 
 defineCustomElements(window);
 const PrivateRoute = ({ children }) => {
@@ -24,9 +23,9 @@ const PrivateRoute = ({ children }) => {
 const router = createBrowserRouter([
   {
     path: "/",
-    element :<Home/>,
+    element: <Home />,
     children: [
-      { index: true, element: <Dashboard/>},
+      { index: true, element: <Dashboard /> },
       {
         path: "events/:eventid",
         element: <EventBooking />,
@@ -43,6 +42,11 @@ const router = createBrowserRouter([
         path: "add-passes",
         element: <AddPasses />,
       },
+      // Add a new route for the event report page
+      {
+        path: "events/5sQAbEfQgN1iWgRQCX94/report",
+        element: <EventReportPage />,
+      },
     ],
   },
 ]);
@@ -50,7 +54,7 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-              <RouterProvider router={router} />  
+      <RouterProvider router={router} />
     </>
   );
 }

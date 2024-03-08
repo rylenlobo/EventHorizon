@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { fireDB } from "../firebase/firebaseConfig"; // Import the Firestore instance
 import { collection, getDocs, query } from "firebase/firestore";
+import DashboardGraph from "./DashboardGraph";
 
 const Dashboard = () => {
   const [events, setEvents] = useState([]);
@@ -35,7 +36,10 @@ const Dashboard = () => {
   }, []);
 
   return (
+    <>
     <div>
+      <DashboardGraph></DashboardGraph>
+      <div style={{ padding: "20px", justifyContent: "center", alignItems: "center" }}>
       <List>
         {events.length != 0 ? (
           events.map((event) => (
@@ -59,16 +63,18 @@ const Dashboard = () => {
                   </React.Fragment>
                 }
               />
-              <Button variant="contained" color="primary">
+              <Button variant="contained" color="primary" >
                 View
               </Button>
             </ListItem>
           ))
         ) : (
-          <ListItem> No Events are There</ListItem>
+         <div></div>
         )}
       </List>
     </div>
+    </div>
+    </>
   );
 };
 
