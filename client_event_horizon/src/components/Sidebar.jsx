@@ -25,6 +25,7 @@ import sfit from "../assets/sfit-logo.png";
 
 export default function Sidebar({ toggleClose, isOpen }) {
   const [user] = useAuthState(auth);
+  // const [value] = useDocumentData(doc(fireDB, "users",user.uid));
 
   const navigate = useNavigate();
 
@@ -47,9 +48,7 @@ export default function Sidebar({ toggleClose, isOpen }) {
                 sx={{ width: 80, height: 80 }}
                 alt={user.displayName ?? "Name"}
                 src={user.photoURL ?? ""}
-              >
-                {user.displayName ?? ""}
-              </Avatar>
+              />
             </ListItemAvatar>
           </ListItem>
           <ListItem disablePadding sx={{ px: 2 }}>
@@ -61,9 +60,17 @@ export default function Sidebar({ toggleClose, isOpen }) {
                   </Typography>
                 </>
               }
-              secondary={user.email}
+              secondary={
+                <>
+                  <Typography variant="subtitle1">{user.email}</Typography>
+                  {/* <Typography variant="subtitle1">
+                    {value.pid ?? "nul"}
+                  </Typography> */}
+                </>
+              }
             />
           </ListItem>
+
           <ListItem>
             <Button size="small" variant="contained" onClick={logout}>
               Sign Out
@@ -104,7 +111,7 @@ export default function Sidebar({ toggleClose, isOpen }) {
             }}
           >
             <ListItemIcon>
-              <HomeRoundedIcon fontSize="large" />
+              <HomeRoundedIcon />
             </ListItemIcon>
             <ListItemText primary="Home" sx={{ fontSize: 100 }} />
           </ListItemButton>
@@ -112,7 +119,7 @@ export default function Sidebar({ toggleClose, isOpen }) {
         <ListItem disablePadding>
           <ListItemButton>
             <ListItemIcon>
-              <NotificationsRoundedIcon fontSize="large" />
+              <NotificationsRoundedIcon />
             </ListItemIcon>
             <ListItemText primary="Notifications" />
           </ListItemButton>
@@ -125,26 +132,36 @@ export default function Sidebar({ toggleClose, isOpen }) {
             }}
           >
             <ListItemIcon>
-              <EventNoteRoundedIcon fontSize="large" />
+              <EventNoteRoundedIcon />
             </ListItemIcon>
             <ListItemText primary="Events" />
           </ListItemButton>
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton>
+          <ListItemButton
+            onClick={() => {
+              navigate("passes");
+              toggleClose();
+            }}
+          >
             <ListItemIcon>
-              <ConfirmationNumberRoundedIcon fontSize="large" />
+              <ConfirmationNumberRoundedIcon />
             </ListItemIcon>
             <ListItemText primary="Passes" />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton>
+          <ListItemButton
+            onClick={() => {
+              navigate("payments&regestrations");
+              toggleClose();
+            }}
+          >
             <ListItemIcon>
-              <WorkHistoryRoundedIcon fontSize="large" />
+              <WorkHistoryRoundedIcon />
             </ListItemIcon>
-            <ListItemText primary=" Past Bookings / Registrations" />
+            <ListItemText primary="Payments / Registrations" />
           </ListItemButton>
         </ListItem>
       </List>
@@ -153,7 +170,12 @@ export default function Sidebar({ toggleClose, isOpen }) {
 
   return (
     <div>
-      <SwipeableDrawer anchor="left" open={isOpen} onClose={toggleClose}>
+      <SwipeableDrawer
+        anchor="left"
+        open={isOpen}
+        onClose={toggleClose}
+        onOpen={() => console.log("Drawer opened")}
+      >
         {list}
       </SwipeableDrawer>
     </div>

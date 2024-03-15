@@ -1,61 +1,260 @@
-import { Box, TextField, InputAdornment, Chip } from "@mui/material";
-import { Swiper, SwiperSlide } from "swiper/react";
+import {
+  Box,
+  TextField,
+  InputAdornment,
+  Chip,
+  SwipeableDrawer,
+  Typography,
+  Divider,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  Button,
+  Fade,
+} from "@mui/material";
 import "swiper/css";
 import "swiper/css/free-mode";
-import { FreeMode } from "swiper/modules";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import upcoming_events from "../data/upcoming_events";
-import EventCard from "../components/EventCard";
+import EventCard, { EventCardSkeleton } from "../components/EventCard";
+import { useContext, useEffect, useState } from "react";
+import TuneIcon from "@mui/icons-material/Tune";
+import { categoriesContext } from "../context/CategoriesContext";
+import { useCollection } from "react-firebase-hooks/firestore";
+import { collection, query, where } from "firebase/firestore";
+import { fireDB } from "../firebase/firbaseConfig";
+import { TransitionGroup } from "react-transition-group";
 
 const Events = () => {
+  const { isOpen, setIsOpen, state, setState, filter, setFilter } =
+    useContext(categoriesContext);
+
+  const [searchText, setSearchText] = useState("");
+  const [searchResult, search_loading] = useCollection(
+    query(collection(fireDB, "events"), where("event_name", "==", searchText))
+  );
+
+  const { technical, workshops, sports, seminar, cultural } = state;
+
+  const [events, events_loading] = useCollection(
+    filter && filter.length > 0
+      ? query(collection(fireDB, "events"), where("category", "in", filter))
+      : query(collection(fireDB, "events"))
+  );
+
+  useEffect(() => {
+    return () => {
+      // Reset the state
+      setState({
+        technical: false,
+        workshops: false,
+        sports: false,
+        seminar: false,
+        cultural: false,
+      });
+
+      // Reset the filter
+      setFilter([]);
+    };
+  }, [setState, setFilter]);
+
+  const handleChange = (event) => {
+    setState({
+      ...state,
+      [event.target.name]: event.target.checked,
+    });
+  };
+
+  const handleClearAll = () => {
+    Object.keys(state).forEach((key) => {
+      if (state[key] === true) {
+        // Call setState with the new state
+        setState((prevState) => ({
+          ...prevState,
+          [key]: false, // or whatever new value you want to set
+        }));
+      }
+    });
+    setFilter([]);
+    setIsOpen(false);
+  };
+
+  const handleDelete = (chipToDelete) => () => {
+    setFilter((chips) => chips.filter((chip) => chip !== chipToDelete));
+    setState((prevState) => ({
+      ...prevState,
+      [chipToDelete]: false,
+    }));
+  };
+
+  const handleApplyFilter = () => {
+    const trueKeys = Object.keys(state).filter((key) => state[key] === true);
+    setFilter(trueKeys);
+    setIsOpen(false);
+  };
+
   return (
     <>
-      <Box display="flex" flexDirection="column">
-        <Box p={2}>
-          <TextField
-            placeholder="Search for Events"
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchRoundedIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
+      <TransitionGroup>
+        <Fade>
+          <Box display="flex" flexDirection="column">
+            <Box p={2}>
+              <TextField
+                placeholder="Search for Events"
+                fullWidth
+                onChange={(event) => {
+                  setSearchText(event.target.value);
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchRoundedIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
+            <Box
+              px={2}
+              display="flex"
+              overflow="scroll"
+              gap={2}
+              sx={{
+                "&::-webkit-scrollbar": {
+                  display: "none",
+                },
+              }}
+            >
+              <Chip
+                icon={<TuneIcon />}
+                label="Filters"
+                onClick={() => {
+                  setIsOpen(true);
+                }}
+              />
+              {filter.map((val, index) => (
+                <Chip
+                  key={index}
+                  sx={{ textTransform: "capitalize" }}
+                  label={`${val}`}
+                  onDelete={handleDelete(val)}
+                />
+              ))}
+            </Box>
+
+            {events_loading ? (
+              <>
+                <TransitionGroup>
+                  <Fade>
+                    <Box
+                      p={2}
+                      display={{ xs: "flex", md: "none" }}
+                      flexDirection="column"
+                      alignItems="center"
+                      justifyContent="center"
+                      gap={3}
+                    >
+                      <EventCardSkeleton />
+                      <EventCardSkeleton />
+                      <EventCardSkeleton />
+                      <EventCardSkeleton />
+                    </Box>
+                  </Fade>
+                </TransitionGroup>
+              </>
+            ) : (
+              <TransitionGroup>
+                {events.docs.map((doc) => (
+                  <Fade key={doc.id}>
+                    <Box
+                      p={2}
+                      display={{ xs: "flex", md: "none" }}
+                      flexDirection="column"
+                      alignItems="center"
+                      justifyContent="center"
+                      gap={3}
+                    >
+                      <EventCard id={doc.id} props={doc.data()} />
+                    </Box>
+                  </Fade>
+                ))}
+              </TransitionGroup>
+            )}
+          </Box>
+        </Fade>
+      </TransitionGroup>
+      <SwipeableDrawer
+        anchor="bottom"
+        open={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+        }}
+      >
+        <Box sx={{ borderRadius: "50%" }}>
+          <Typography variant="h6" color="initial" p={2}>
+            Categories
+          </Typography>
+          <Divider color="black" />
+          <Box p={2}>
+            <FormGroup>
+              <FormControlLabel
+                name="technical"
+                value="Technical"
+                control={
+                  <Checkbox onChange={handleChange} checked={technical} />
+                }
+                label="Technical"
+              />
+              <FormControlLabel
+                name="workshops"
+                value="WorkShops"
+                control={
+                  <Checkbox onChange={handleChange} checked={workshops} />
+                }
+                label="WorkShops"
+              />
+              <FormControlLabel
+                name="sports"
+                value="Sports"
+                control={<Checkbox onChange={handleChange} checked={sports} />}
+                label="Sports"
+              />
+              <FormControlLabel
+                name="seminar"
+                value="Seminar"
+                control={<Checkbox onChange={handleChange} checked={seminar} />}
+                label="Seminar"
+              />{" "}
+              <FormControlLabel
+                name="cultural"
+                value="Cultural"
+                control={
+                  <Checkbox onChange={handleChange} checked={cultural} />
+                }
+                label="Cultural"
+              />
+            </FormGroup>
+          </Box>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            px={2}
+            py={1}
+          >
+            <Button variat="text" size="large" onClick={handleClearAll}>
+              Clear All
+            </Button>
+            <Button
+              variant="contained"
+              size="large"
+              sx={{ width: 180 }}
+              onClick={handleApplyFilter}
+            >
+              Apply
+            </Button>
+          </Box>
         </Box>
-        <Box
-          px={2}
-          display="flex"
-          overflow="scroll"
-          gap={2}
-          sx={{
-            "&::-webkit-scrollbar": {
-              display: "none",
-            },
-          }}
-        >
-          <Chip label="All Categories" />
-          <Chip label="Technical" />
-          <Chip label="Sports" />
-          <Chip label="Seminars" />
-          <Chip label="Workshops" />
-        </Box>
-        <Box
-          p={2}
-          display={{ xs: "flex", md: "none" }}
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          gap={3}
-        >
-          {upcoming_events.map((data) => (
-            <>
-              <EventCard props={data} />
-            </>
-          ))}
-        </Box>
-      </Box>
+      </SwipeableDrawer>
     </>
   );
 };

@@ -9,7 +9,7 @@ const upcoming_events = [
     event_name: "Iris DJ Night 2024",
     date: "Jul 21",
     price: "300",
-    category: "Category",
+    category: "Technical",
     day: "Tue",
     time: {
       start: "4:30 AM",

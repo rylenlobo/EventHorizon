@@ -8,10 +8,8 @@ import themeObj from "./palette.js";
 const theme = createTheme(themeObj);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <App />
-    </ThemeProvider>
-  </React.StrictMode>
+  <ThemeProvider theme={theme}>
+    <CssBaseline />
+    <App />
+  </ThemeProvider>
 );

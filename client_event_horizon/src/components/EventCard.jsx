@@ -3,18 +3,16 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import { Box, Chip, Avatar } from "@mui/material";
-
-import sfit_logo from "../assets/sfit-logo.png";
+import { Box, Chip, Skeleton, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-const EventCard = ({ props }) => {
+const EventCard = ({ id, props }) => {
   const navigate = useNavigate();
 
   return (
     <Box
       onClick={() => {
-        navigate(`/events/${props.id}`);
+        navigate(`/events/${id}`);
       }}
     >
       <Card sx={{ width: 330 }}>
@@ -24,35 +22,19 @@ const EventCard = ({ props }) => {
             image={props.event_image}
             title="DJ Night"
           />
-          <Box
-            p={1}
-            width="100%"
-            position="absolute"
-            display="flex"
-            alignItems="center"
-            justifyContent="end"
-            sx={{
-              top: 2,
-            }}
-          >
-            <Avatar
-              src={props.college == "SFIT" ? sfit_logo : " "}
-              sx={{ height: 30, width: 30 }}
-            />
-          </Box>
         </Box>
         <CardContent>
           <Box display="flex" flexDirection="column" gap={1 / 2}>
             <Box display="flex" gap={1}>
               <Chip
-                label={"\u20B9" + props.price}
+                label={props.price === "0" ? "FREE" : "\u20B9" + props.price}
                 size="small"
                 color={"primary"}
               />
               <Chip
                 label={props.category}
                 size="small"
-                sx={{ color: "text.grey" }}
+                sx={{ color: "text.grey", textTransform: "capitalize" }}
               />
             </Box>
             <Typography variant="caption" color="text.grey">
@@ -81,4 +63,23 @@ const EventCard = ({ props }) => {
   );
 };
 
+export const EventCardSkeleton = () => {
+  return (
+    <Box
+      component={Paper}
+      sx={{
+        width: 330,
+        overflow: "hidden",
+      }}
+    >
+      <Skeleton variant="rectangular" height={120} />
+
+      <Box p={1}>
+        <Skeleton variant="text" />
+        <Skeleton variant="text" width="60%" />
+        <Skeleton variant="text" width="80%" />
+      </Box>
+    </Box>
+  );
+};
 export default EventCard;
