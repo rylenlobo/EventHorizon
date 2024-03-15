@@ -1,44 +1,67 @@
-import React, { useState } from 'react';
-import { TextField, Button, Grid, Box, Typography } from '@mui/material';
-import { fireDB } from '../firebase/firebaseConfig'; // Import the Firestore instance
+import React, { useState } from "react";
 import {
-    collection,
-    addDoc,
-  } from 'firebase/firestore';
+  TextField,
+  Button,
+  Grid,
+  Box,
+  Typography,
+  MenuItem,
+  IconButton,
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles"; // Import the useTheme hook
+import { fireDB } from "../firebase/firebaseConfig"; // Import the Firestore instance
+import { collection, addDoc } from "firebase/firestore";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const AddEvent = () => {
+  const theme = useTheme(); // Access the current theme
+
   const [eventData, setEventData] = useState({
-    imgUrl: '',
-    name: '',
-    entryFee: '',
-    sponsors: '',
-    date: '',
-    committeeName: '',
-    category: '',
-    timing: '',
-    description: ''
+    event_image: "",
+    event_name: "",
+    price: "",
+    category: "",
+    date: "",
+    instructions: [""],
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e, index) => {
     const { name, value } = e.target;
+    const newInstructions = [...eventData.instructions];
+    newInstructions[index] = value;
     setEventData((prevData) => ({
       ...prevData,
-      [name]: value
+      instructions: newInstructions,
     }));
   };
 
-  const handleAddEvent =  async () =>{
-    const eventRef = await addDoc(collection(fireDB,"events"),{
-      imgUrl: eventData.imgUrl,
-      name: eventData.name,
-      entryFee: eventData.entryFee,
-      sponsors: eventData.sponsors,
-      date: eventData.date,
-      committeeName: eventData.committeeName,
+  const handleAddInstruction = () => {
+    setEventData((prevData) => ({
+      ...prevData,
+      instructions: [...prevData.instructions, ""],
+    }));
+  };
+
+  const handleRemoveInstruction = (index) => {
+    const newInstructions = [...eventData.instructions];
+    newInstructions.splice(index, 1);
+    setEventData((prevData) => ({
+      ...prevData,
+      instructions: newInstructions,
+    }));
+  };
+
+  const handleAddEvent = async () => {
+    const eventRef = await addDoc(collection(fireDB, "events"), {
+      event_image: eventData.event_image,
+      event_name: eventData.event_name,
+      price: eventData.price,
       category: eventData.category,
-      timing: eventData.timing,
-      description: eventData.description
-    }).then((docRef) => {
+      date: eventData.date,
+      instructions: eventData.instructions,
+    })
+      .then((docRef) => {
         console.log("Event added with ID: ", docRef.id);
       })
       .catch((error) => {
@@ -46,67 +69,70 @@ const AddEvent = () => {
       });
 
     setEventData({
-      imgUrl: '',
-      name: '',
-    //   id: '',
-      entryFee: '',
-      sponsors: '',
-      date: '',
-      committeeName: '',
-      category: '',
-      timing: '',
-      description: ''
+      event_image: "",
+      event_name: "",
+      price: "",
+      category: "",
+      date: "",
+      instructions: [""],
     });
   };
 
   return (
-    <Box sx={{ padding: 2 }}>
-      <Typography variant="h5" gutterBottom>Add Event</Typography>
+    <Box sx={{ padding: 2, backgroundColor: theme.palette.background.paper, color: theme.palette.text.primary }}>
+      <Typography variant="h5" gutterBottom>
+        Add Event
+      </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <TextField
-            name="imgUrl"
-            label="Image URLs"
+            name="event_image"
+            label="Image URL"
             fullWidth
-            value={eventData.imgUrl}
-            onChange={handleChange}
+            value={eventData.event_image}
+            onChange={(e) =>
+              setEventData({ ...eventData, event_image: e.target.value })
+            }
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            name="event_name"
+            label="Event Name"
+            fullWidth
+            value={eventData.event_name}
+            onChange={(e) =>
+              setEventData({ ...eventData, event_name: e.target.value })
+            }
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            name="name"
-            label="Name"
+            name="price"
+            label="Price"
             fullWidth
-            value={eventData.name}
-            onChange={handleChange}
-          />
-        </Grid>
-        {/* <Grid item xs={12} sm={6}>
-          <TextField
-            name="id"
-            label="ID"
-            fullWidth
-            value={eventData.id}
-            onChange={handleChange}
-          />
-        </Grid> */}
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="entryFee"
-            label="Entry Fee"
-            fullWidth
-            value={eventData.entryFee}
-            onChange={handleChange}
+            value={eventData.price}
+            onChange={(e) =>
+              setEventData({ ...eventData, price: e.target.value })
+            }
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            name="sponsors"
-            label="Sponsors"
+            select
+            name="category"
+            label="Category"
             fullWidth
-            value={eventData.sponsors}
-            onChange={handleChange}
-          />
+            value={eventData.category}
+            onChange={(e) =>
+              setEventData({ ...eventData, category: e.target.value })
+            }
+          >
+            <MenuItem value="workshop">Workshop</MenuItem>
+            <MenuItem value="hackathon">Hackathon</MenuItem>
+            <MenuItem value="sports">Sports</MenuItem>
+            <MenuItem value="others">Others</MenuItem>
+          </TextField>
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
@@ -115,46 +141,37 @@ const AddEvent = () => {
             type="date"
             fullWidth
             value={eventData.date}
-            onChange={handleChange}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="committeeName"
-            label="Committee Name"
-            fullWidth
-            value={eventData.committeeName}
-            onChange={handleChange}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="category"
-            label="Category"
-            fullWidth
-            value={eventData.category}
-            onChange={handleChange}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="timing"
-            label="Timing"
-            fullWidth
-            value={eventData.timing}
-            onChange={handleChange}
+            onChange={(e) =>
+              setEventData({ ...eventData, date: e.target.value })
+            }
           />
         </Grid>
         <Grid item xs={12}>
-          <TextField
-            name="description"
-            label="Description"
-            fullWidth
-            multiline
-            rows={4}
-            value={eventData.description}
-            onChange={handleChange}
-          />
+          <Typography variant="subtitle1">Instructions:</Typography>
+          {eventData.instructions.map((instruction, index) => (
+            <Grid container spacing={2} alignItems="center" key={index}>
+              <Grid item xs={10}>
+                <TextField
+                  name={`instruction-${index}`}
+                  label={`Instruction ${index + 1}`}
+                  fullWidth
+                  value={instruction}
+                  onChange={(e) => handleChange(e, index)}
+                />
+              </Grid>
+              <Grid item xs={2}>
+                <IconButton
+                  color="primary"
+                  onClick={() => handleRemoveInstruction(index)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+          ))}
+          <Button startIcon={<AddIcon />} onClick={handleAddInstruction}>
+            Add Instruction
+          </Button>
         </Grid>
         <Grid item xs={12}>
           <Button variant="contained" color="primary" onClick={handleAddEvent}>
