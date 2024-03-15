@@ -22,6 +22,10 @@ const DashboardGraph = () => {
     fetchReportData();
   }, []);
 
+  if (!reportData || reportData.length === 0) {
+    return <div style={{ alignItems: "center", paddingLeft: 700, paddingTop: 300 }}>Loading...</div>;
+  }
+
   // Process data to prepare for statistics
   // You need to extract event names and registered users for the bar graph
   // And calculate percentages of attendees and absent students for the pie chart
@@ -57,39 +61,52 @@ const DashboardGraph = () => {
       { id: 1, value: event.absents, label:`Absents: ${((event.absents / event.registeredUsers) * 100).toFixed(2)}%` },
     ],
   }));
-  if (!reportData || reportData.length === 0) {
-    return <div style={{alignItems:"center", paddingLeft:700,paddingTop:300 }}>Loading...</div>; // or render a loading indicator
-  }
-  
+
   return (
-    
     <div style={{ padding: "20px", display: "flex", justifyContent: "center", alignItems: "center" }}>
       <div>
-        <h2>Event Statistics</h2>
+        <h2 style={{ color: "white" }}>Event Statistics</h2>
         <div style={{ width: "50%", margin: "auto" }}>
-          <h3>Registered Users by Event</h3>
+          <h3 style={{ color: "white" }}>Registered Users by Event</h3>
           <BarChart
             xAxis={[
-              { scaleType: "band", data: eventData.map((event) => event.eventName) },
+              { 
+                scaleType: "band", 
+                data: eventData.map((event) => event.eventName),
+                title: { display: true, text: 'Event Name', color: 'white' },
+                labels: { color: 'white' }
+              }
             ]}
             series={[
-              { data: eventData.map((event) => event.registeredUsers)  , label:'Registered User'},
-              { data: eventData.map((event) => event.attendees) ,label:'Present'},
-              { data: eventData.map((event) => event.absents) ,label:'Absent'},
+              { data: eventData.map((event) => event.registeredUsers), label: 'Registered User' ,},
+              { data: eventData.map((event) => event.attendees), label: 'Present' },
+              { data: eventData.map((event) => event.absents), label: 'Absent' },
             ]}
             width={500}
             height={300}
+            // Apply styles to the chart
+            options={{
+              legend: { fontColor: "white" },
+              scales: {
+                x: { 
+                  title: { display: true, color: "white" },
+                  ticks: { color: "white" }
+                },
+                y: { 
+                  title: { display: true, color: "white" },
+                  ticks: { color: "white" }
+                },
+              },
+            }}
           />
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gridGap: "50px" }}>
           {pieData.map((event, index) => (
             <div key={index}>
-              <h3>{event.eventName}</h3>
+              <h3 style={{ color: "white" }}>{event.eventName}</h3>
               <PieChart
                 series={[
-                  {
-                    data: event.data,
-                  },
+                  { data: event.data },
                 ]}
                 width={500}
                 height={200}

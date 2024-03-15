@@ -118,7 +118,8 @@ const AddReport = () => {
         Add Event Report
       </Typography>
       <form onSubmit={handleSubmit}>
-        <FormControl className={classes.formControl}>
+        <FormControl sx={{mb:.6, minWidth:"100%"}}
+        >
           <InputLabel id="event-label">Event Name</InputLabel>
           <Select
             labelId="event-label"
@@ -142,7 +143,7 @@ const AddReport = () => {
         />
 
         <TextField
-          className={classes.text}
+          sx={{mb:1,minWidth:"100%"}}
           label="Registered Users"
           name="registeredUsers"
           value={reportData.registeredUsers}
@@ -150,7 +151,7 @@ const AddReport = () => {
           required
         />
         <TextField
-          className={classes.text}
+          sx={{mb:1,minWidth:"100%"}}
           label="Attendees"
           name="attendees"
           type="number"
@@ -159,7 +160,7 @@ const AddReport = () => {
           required
         />
         <TextField
-          className={classes.text}
+          sx={{mb:1,minWidth:"100%"}}
           label="Absents"
           name="absents"
           type="number"
@@ -168,7 +169,7 @@ const AddReport = () => {
           required
         />
         <TextField
-          className={classes.text}
+          sx={{mb:1,minWidth:"100%"}}
           label="Description"
           name="description"
           value={reportData.description}
@@ -176,7 +177,7 @@ const AddReport = () => {
           required
         />
         <TextField
-          className={classes.text}
+         sx={{mb:1,minWidth:"100%"}}
           label="Expenditure in Rs."
           name="expenditure"
           type="number"
@@ -185,7 +186,7 @@ const AddReport = () => {
           required
         />
         <TextField
-          className={classes.text}
+          sx={{mb:1,minWidth:"100%"}}
           label="Earning in Rs."
           name="earning"
           type="number"
@@ -194,7 +195,7 @@ const AddReport = () => {
           required
         />
         <TextField
-          className={classes.text}
+          sx={{mb:1,minWidth:"100%"}}
           label="Entry Fee in Rs."
           name="entryFee"
           type="number"
