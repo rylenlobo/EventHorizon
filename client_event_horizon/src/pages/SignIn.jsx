@@ -11,17 +11,37 @@ import { useState } from "react";
 import { auth } from "../firebase/firbaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { useFormik } from "formik";
+import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
 
 export default function SignIn() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
   const [signInWithEmailAndPassword, user, loading, error] =
     useSignInWithEmailAndPassword(auth);
+
+  const validationSchema = yup.object({
+    email: yup
+      .string("Enter your email")
+      .email("Enter a valid email")
+      .required("Email is required"),
+    password: yup
+      .string("Enter your password")
+      .required("Password is required"),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      signInWithEmailAndPassword(values.email, values.password);
+    },
+  });
 
   useEffect(() => {
     if (error) {
@@ -69,32 +89,39 @@ export default function SignIn() {
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <Box component="form" noValidate sx={{ mt: 1 }}>
+            <Box
+              component="form"
+              noValidate
+              sx={{ mt: 1 }}
+              onSubmit={formik.handleSubmit}
+            >
               <TextField
+                sx={{ mb: 2 }}
                 variant="outlined"
-                error={error}
-                margin="normal"
-                required
                 fullWidth
                 id="email"
-                label="Email Address"
                 name="email"
-                autoFocus
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                label="Email"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
               />
               <TextField
-                error={error}
-                variant="outlined"
-                margin="normal"
-                required
+                tField
                 fullWidth
+                id="password"
                 name="password"
                 label="Password"
                 type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.password && Boolean(formik.errors.password)
+                }
+                helperText={formik.touched.password && formik.errors.password}
               />
 
               <LoadingButton
@@ -102,7 +129,7 @@ export default function SignIn() {
                 loading={loading}
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                onClick={() => signInWithEmailAndPassword(email, password)}
+                type="submit"
               >
                 Sign In
               </LoadingButton>

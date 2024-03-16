@@ -8,48 +8,44 @@ import { committeesContext } from "../context/CommitteesContext";
 import { useContext } from "react";
 
 const Committees = ({ props }) => {
-  const { committees_loading } = useContext(committeesContext);
-
   return (
-    <Fade in={!committees_loading}>
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        gap={2}
-        border={1}
-        borderColor="colors.border"
-        borderRadius={2}
-        height={50}
-        p={2}
+    <Box
+      display="flex"
+      alignItems="center"
+      justifyContent="space-between"
+      gap={2}
+      border={1}
+      borderColor="colors.border"
+      borderRadius={2}
+      height={50}
+      p={2}
+    >
+      <Avatar
+        src={props.imageUrl ?? ""}
+        sx={{
+          width: 50,
+          height: 50,
+        }}
+      />
+
+      <Typography
+        variant="subtitle2"
+        fontSize={{ md: 15 }}
+        sx={
+          props.name?.length > 50
+            ? {
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }
+            : {}
+        }
       >
-        <Avatar
-          src={props.imageUrl ?? ""}
-          sx={{
-            width: 50,
-            height: 50,
-          }}
-        />
+        {props.name ?? " "}
+      </Typography>
 
-        <Typography
-          variant="subtitle2"
-          fontSize={{ md: 15 }}
-          sx={
-            props.name?.length > 50
-              ? {
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }
-              : {}
-          }
-        >
-          {props.name ?? " "}
-        </Typography>
-
-        <NavigateNextRoundedIcon fontSize="small" />
-      </Box>
-    </Fade>
+      <NavigateNextRoundedIcon fontSize="small" />
+    </Box>
   );
 };
 

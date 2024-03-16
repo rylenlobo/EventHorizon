@@ -25,11 +25,14 @@ import {
   useCreateUserWithEmailAndPassword,
 } from "react-firebase-hooks/auth";
 import { auth, fireDB } from "../firebase/firbaseConfig";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { setDoc, doc } from "firebase/firestore";
-
+import { updateProfile } from "firebase/auth";
+import { setDoc, doc, serverTimestamp } from "firebase/firestore";
+import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import NumbersRoundedIcon from "@mui/icons-material/NumbersRounded";
+import { useFormik } from "formik";
+import * as yup from "yup";
+import { api } from "../../services/api";
 
 export default function SignUp() {
   const { stepCount, setStepCount, setResponseData } =
@@ -40,6 +43,7 @@ export default function SignUp() {
     switch (location.pathname) {
       case "/signup":
         setStepCount(1);
+        setResponseData("");
         break;
       case "/signup/2":
         setStepCount(2);
@@ -94,7 +98,7 @@ export const ScanIdCard = () => {
 
     // Send the base64 image to the server
     axios
-      .post("http://localhost:3000/api/process-image", {
+      .post(`${api}/process-image`, {
         image: image.base64String,
       })
       .then((response) => {
@@ -256,7 +260,6 @@ export const ConfirmDetails = () => {
             Rescan
           </Button>
           <Button
-            endIcon={<ArrowForwardIosRoundedIcon />}
             variant="contained"
             sx={{ my: 2 }}
             onClick={() => {
@@ -272,34 +275,34 @@ export const ConfirmDetails = () => {
 };
 
 export const SignUpForm = () => {
-  const {
-    email,
-    password,
-    setEmail,
-    setPassword,
-    setResponseData,
-    responseData,
-  } = useContext(signUpContext);
-
-  const [emailError, setEmailError] = useState(false);
-  const [passwordError, setPasswordError] = useState(false);
-  const [createUserWithEmailAndPassword] =
-    useCreateUserWithEmailAndPassword(auth);
-  const navigate = useNavigate();
+  const { setResponseData, responseData } = useContext(signUpContext);
   const [user, loading] = useAuthState(auth);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!email) {
-      setEmailError(true);
-    }
-    if (!password) {
-      setPasswordError(true);
-    }
-    if (email && password) {
-      createUserWithEmailAndPassword(email, password);
-    }
-  };
+  const [createUserWithEmailAndPassword, error] =
+    useCreateUserWithEmailAndPassword(auth);
+
+  const validationSchema = yup.object({
+    email: yup
+      .string("Enter your email")
+      .email("Enter a valid email")
+      .required("Email is required"),
+    password: yup
+      .string("Enter your password")
+      .required("Password is required"),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      createUserWithEmailAndPassword(values.email, values.password);
+    },
+  });
+
+  const navigate = useNavigate();
 
   if (user) {
     updateProfile(user, {
@@ -307,17 +310,35 @@ export const SignUpForm = () => {
     });
 
     setDoc(doc(fireDB, "users", user.uid), {
-      name: responseData.name,
       email: user.email,
+      name: responseData.name,
+      department: responseData.department,
+      pid: responseData.pid,
+      role: "user",
+      timeStamp: serverTimestamp(),
     });
     navigate("/");
-    setEmail("");
-    setPassword("");
     setResponseData(null);
   }
 
+  useEffect(() => {
+    if (error) {
+      toast.error(error.message, {
+        position: "top-right",
+        autoClose: 5000,
+        closeOnClick: true,
+        theme: "light",
+      });
+    }
+  }, [error]);
+
   return (
-    <Box component="form" noValidate sx={{ mt: 5 }} onSubmit={handleSubmit}>
+    <Box
+      component="form"
+      noValidate
+      sx={{ mt: 5 }}
+      onSubmit={formik.handleSubmit}
+    >
       <Typography sx={{ fontWeight: 600, fontSize: 15 }} align="center" mb={3}>
         Create an account using you SFIT email and password
       </Typography>
@@ -325,8 +346,15 @@ export const SignUpForm = () => {
         <Grid item xs={12}>
           <TextField
             fullWidth
-            error={emailError}
-            helperText={emailError ? "Email is required" : ""}
+            variant="outlined"
+            id="email"
+            name="email"
+            label="Email"
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.email && Boolean(formik.errors.email)}
+            helperText={formik.touched.email && formik.errors.email}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -334,30 +362,21 @@ export const SignUpForm = () => {
                 </InputAdornment>
               ),
             }}
-            required
-            id="email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setEmailError(false);
-            }}
-            label="Email Address"
-            name="email"
-            autoComplete="email"
           />
         </Grid>
         <Grid item xs={12}>
           <TextField
-            required
-            error={passwordError}
-            helperText={passwordError ? "Password is required" : ""}
+            tField
             fullWidth
+            id="password"
             name="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setPasswordError(false);
-            }}
+            label="Password"
+            type="password"
+            value={formik.values.password}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.password && Boolean(formik.errors.password)}
+            helperText={formik.touched.password && formik.errors.password}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -365,10 +384,6 @@ export const SignUpForm = () => {
                 </InputAdornment>
               ),
             }}
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="new-password"
           />
         </Grid>
       </Grid>
@@ -381,6 +396,7 @@ export const SignUpForm = () => {
       >
         Sign Up
       </LoadingButton>
+      <ToastContainer />
     </Box>
   );
 };

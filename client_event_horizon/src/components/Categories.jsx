@@ -14,7 +14,7 @@ export const CategoriesSkeleton = () => {
   );
 };
 
-const Categories = ({ props }) => {
+const Categories = ({ props, handleCategories }) => {
   return (
     <>
       <Paper
@@ -27,6 +27,7 @@ const Categories = ({ props }) => {
           overflow: "hidden",
           position: "relative",
         }}
+        onClick={handleCategories}
       >
         <Image
           src={props.url}
@@ -53,6 +54,7 @@ const Categories = ({ props }) => {
             justifyContent: "center",
             width: "100%",
             height: "100%",
+            textTransform: "capitalize",
           }}
         >
           {props.name}
