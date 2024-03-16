@@ -46,7 +46,7 @@ const AddReport = () => {
       try {
         const eventCollection = collection(fireDB, "events");
         const snapshot = await getDocs(eventCollection);
-        const eventNamesArray = snapshot.docs.map((doc) => doc.data().name);
+        const eventNamesArray = snapshot.docs.map((doc) => doc.data().event_name);
         setEventNames(eventNamesArray);
       } catch (error) {
         console.error("Error fetching event names:", error);

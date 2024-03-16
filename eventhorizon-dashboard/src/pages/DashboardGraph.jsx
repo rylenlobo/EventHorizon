@@ -1,120 +1,165 @@
 import React, { useState, useEffect } from "react";
-import { BarChart } from "@mui/x-charts/BarChart";
-import { PieChart } from "@mui/x-charts/PieChart";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { Typography, Grid, Select, MenuItem } from "@mui/material";
 import { collection, getDocs } from "firebase/firestore";
 import { fireDB } from "../firebase/firebaseConfig";
 
 const DashboardGraph = () => {
-  const [reportData, setReportData] = useState([]);
+  const [eventsData, setEventsData] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState("");
+  const [eventDetails, setEventDetails] = useState({});
 
   useEffect(() => {
-    const fetchReportData = async () => {
-      try {
-        const reportsCollection = collection(fireDB, "reports");
-        const snapshot = await getDocs(reportsCollection);
-        const reports = snapshot.docs.map((doc) => doc.data());
-        setReportData(reports);
-      } catch (error) {
-        console.error("Error fetching report data:", error);
-      }
-    };
-
-    fetchReportData();
+    fetchEventsData();
   }, []);
 
-  if (!reportData || reportData.length === 0) {
-    return <div style={{ alignItems: "center", paddingLeft: 700, paddingTop: 300 }}>Loading...</div>;
-  }
+  const fetchEventsData = async () => {
+    try {
+      const reportsCollection = collection(fireDB, "reports");
+      const reportsSnapshot = await getDocs(reportsCollection);
+      const allEventsData = [];
+      const eventsDetails = {};
 
-  // Process data to prepare for statistics
-  // You need to extract event names and registered users for the bar graph
-  // And calculate percentages of attendees and absent students for the pie chart
-  // This is a simplified example, adjust as per your actual data structure
-  const eventData = reportData.map((report) => ({
-    eventName: report.event,
-    registeredUsers: report.registeredUsers,
-    attendees: parseInt(report.attendees),
-    absents: parseInt(report.absents),
-  }));
+      reportsSnapshot.forEach((doc) => {
+        const reportData = doc.data();
+        allEventsData.push({
+          event: reportData.event,
+          registeredUsers: reportData.registeredUsers,
+        });
 
-  // Prepare data for the bar graph
-  const barData = {
-    labels: eventData.map((event) => event.eventName),
-    datasets: [
-      {
-        label: "Registered Users",
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 1,
-        hoverBackgroundColor: "rgba(75, 192, 192, 0.8)",
-        hoverBorderColor: "rgba(75, 192, 192, 1)",
-        data: eventData.map((event) => event.registeredUsers),
-      },
-    ],
+        if (!eventsDetails[reportData.event]) {
+          eventsDetails[reportData.event] = {
+            registeredUsers: reportData.registeredUsers,
+            attendees: reportData.attendees,
+            absents: reportData.absents,
+          };
+        }
+      });
+
+      setEventDetails(eventsDetails);
+      setEventsData(allEventsData);
+    } catch (error) {
+      console.error("Error fetching events data:", error);
+    }
   };
 
-  // Prepare data for the pie charts
-  const pieData = eventData.map((event) => ({
-    eventName: event.eventName,
-    data: [
-      { id: 0, value: event.attendees, label: `Attendees: ${((event.attendees / event.registeredUsers) * 100).toFixed(2)}%` },
-      { id: 1, value: event.absents, label:`Absents: ${((event.absents / event.registeredUsers) * 100).toFixed(2)}%` },
-    ],
-  }));
+  const handleEventChange = (event) => {
+    setSelectedEvent(event.target.value);
+  };
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div style={{ backgroundColor: "white", padding: "10px", border: "1px solid #ccc" }}>
+          <p>{`${label}`}</p>
+          <p>{`Registered Users: ${data.registeredUsers}`}</p>
+        </div>
+      );
+    }
+
+    return null;
+  };
 
   return (
-    <div style={{ padding: "20px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-      <div>
-        <h2 style={{ color: "white" }}>Event Statistics</h2>
-        <div style={{ width: "50%", margin: "auto" }}>
-          <h3 style={{ color: "white" }}>Registered Users by Event</h3>
-          <BarChart
-            xAxis={[
-              { 
-                scaleType: "band", 
-                data: eventData.map((event) => event.eventName),
-                title: { display: true, text: 'Event Name', color: 'white' },
-                labels: { color: 'white' }
-              }
-            ]}
-            series={[
-              { data: eventData.map((event) => event.registeredUsers), label: 'Registered User' ,},
-              { data: eventData.map((event) => event.attendees), label: 'Present' },
-              { data: eventData.map((event) => event.absents), label: 'Absent' },
-            ]}
-            width={500}
-            height={300}
-            // Apply styles to the chart
-            options={{
-              legend: { fontColor: "white" },
-              scales: {
-                x: { 
-                  title: { display: true, color: "white" },
-                  ticks: { color: "white" }
-                },
-                y: { 
-                  title: { display: true, color: "white" },
-                  ticks: { color: "white" }
-                },
-              },
-            }}
-          />
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gridGap: "50px" }}>
-          {pieData.map((event, index) => (
-            <div key={index}>
-              <h3 style={{ color: "white" }}>{event.eventName}</h3>
-              <PieChart
-                series={[
-                  { data: event.data },
-                ]}
-                width={500}
-                height={200}
-              />
+    <div>
+      <Grid container spacing={2} alignItems="center">
+        <Grid item xs={12} sm={6}>
+          <Typography variant="h6" gutterBottom>
+            Select Event
+          </Typography>
+          <Select value={selectedEvent} onChange={handleEventChange} fullWidth>
+            <MenuItem value="">
+              <em>Select Event</em>
+            </MenuItem>
+            {eventsData.map((event, index) => (
+              <MenuItem key={index} value={event.event}>
+                {event.event}
+              </MenuItem>
+            ))}
+          </Select>
+        </Grid>
+      </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <Typography variant="h6" gutterBottom>
+            Event Comparison - Registered Users
+          </Typography>
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart
+              data={eventsData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="event" />
+              <YAxis />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+              {Object.keys(eventDetails).map((event, index) => (
+                <Line
+                  key={index}
+                  type="monotone"
+                  dataKey={`registeredUsers`}
+                  name={event}
+                  stroke={`#${Math.floor(Math.random() * 16777215).toString(
+                    16
+                  )}`}
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          {selectedEvent && (
+            <div>
+              <Typography variant="h6" gutterBottom>
+                {selectedEvent} - Registered Users, Attendees, and Absents
+              </Typography>
+              <ResponsiveContainer width="100%" height={400}>
+                <BarChart
+                  data={[
+                    {
+                      name: "Registered",
+                      value: eventDetails[selectedEvent]?.registeredUsers || 0,
+                      color: "#8884d8",
+                    },
+                    {
+                      name: "Present",
+                      value: eventDetails[selectedEvent]?.attendees || 0,
+                      color: "#82ca9d",
+                    },
+                    {
+                      name: "Absent",
+                      value: eventDetails[selectedEvent]?.absents || 0,
+                      color: "#ffc658",
+                    },
+                  ]}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+
+                  <Bar dataKey="value" name="Students" fill="#82ca9d" />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
-          ))}
-        </div>
-      </div>
+          )}
+        </Grid>
+      </Grid>
     </div>
   );
 };

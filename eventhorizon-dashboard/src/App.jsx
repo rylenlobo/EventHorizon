@@ -1,5 +1,5 @@
 import { auth } from "./firebase/firebaseConfig";
-import Dashboard from "./pages/Dashboard";
+
 import { defineCustomElements } from "@ionic/pwa-elements/loader";
 import AddEvent from "./pages/AddEvent";
 import EventBooking from "./pages/EventBooking";
@@ -13,6 +13,8 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
+import GetAllRegisteredUsers from "./pages/GetRegistrations";
+import AdminDashboard from "./pages/AdminDashboard";
 
 defineCustomElements(window);
 const PrivateRoute = ({ children }) => {
@@ -25,7 +27,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <Home />,
     children: [
-      { index: true, element: <Dashboard /> },
+      { index: true, element: <AdminDashboard/> },
       {
         path: "events/:eventid",
         element: <EventBooking />,
@@ -41,6 +43,14 @@ const router = createBrowserRouter([
       {
         path: "add-passes",
         element: <AddPasses />,
+      },
+      {
+        path: "report/:eventId",
+        element: <EventReportPage/> ,
+      },
+      {
+        path: "registrations",
+        element: <GetAllRegisteredUsers/>,
       },
       // Add a new route for the event report page
       {
