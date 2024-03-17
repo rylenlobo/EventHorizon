@@ -108,12 +108,13 @@ export const themeJson = {
 
 function CustomForm() {
   const param = useParams();
-  const [user] = useAuthState(auth);
+  const [user, user_loading] = useAuthState(auth);
 
   const navigate = useNavigate();
   const { setFormData } = useContext(eventFormData);
   const [data, loading] = useDocumentData(doc(fireDB, "events", param.eventid));
   const [uid, setUid] = useState(" ");
+  const [feildvalues] = useDocumentData(doc(fireDB, "users", uid));
 
   useEffect(() => {
     if (user) {
@@ -123,6 +124,7 @@ function CustomForm() {
 
   if (!loading) {
     const survey = new Model(data.form);
+    survey.data = feildvalues;
     survey.applyTheme(themeJson);
     survey.completedHtml = "";
     survey.onComplete.add((sender) => {
@@ -130,14 +132,15 @@ function CustomForm() {
       setFormData(sender.data);
       if (Number(data.price) > 0) {
         redirectPaymentGateway(
-          Number(data.price * sender.data.no_of_members),
+          Number(data.price * (sender.data.no_of_members || 1)),
           data.event_name,
           user.uid,
           param.eventid,
           data.event_image,
           data.college + "|" + data.venue,
           data.date,
-          data.time.start + " - " + data.time.end
+          data.time.start + " - " + data.time.end,
+          sender.data
         );
         setTimeout(() => {
           navigate("/payments&regestrations");
@@ -172,9 +175,9 @@ function CustomForm() {
             event_venue: data.college + " | " + data.venue,
             qrcode: CryptoJS.SHA256(
               JSON.stringify({
-                amount: data.amount,
+                amount: data.price,
                 user: uid,
-                event_image: uid,
+                event_image: data.event_image,
                 event_name: data.event_name,
                 event_date: data.date,
                 event_time: data.time.start + " - " + data.time.end,
@@ -188,15 +191,22 @@ function CustomForm() {
               user: uid,
               qrcode: CryptoJS.SHA256(
                 JSON.stringify({
-                  amount: data.amount,
+                  amount: data.price,
                   user: uid,
-                  event_image: uid,
+                  event_image: data.event_image,
                   event_name: data.event_name,
                   event_date: data.date,
                   event_time: data.time.start + " - " + data.time.end,
                   event_venue: data.college + " | " + data.venue,
                 })
               ).toString(),
+            }
+          );
+          await addDoc(
+            collection(fireDB, "events", param.eventid, "registration"),
+            {
+              ...sender.data,
+              price: data.price,
             }
           );
         };

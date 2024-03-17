@@ -1,11 +1,8 @@
 /* eslint-disable react/prop-types */
-import { Box, Avatar, Typography, Skeleton, Fade } from "@mui/material";
+import { Box, Avatar, Typography, Skeleton } from "@mui/material";
 import NavigateNextRoundedIcon from "@mui/icons-material/NavigateNextRounded";
 import "swiper/css";
 import "swiper/css/autoplay";
-
-import { committeesContext } from "../context/CommitteesContext";
-import { useContext } from "react";
 
 const Committees = ({ props }) => {
   return (

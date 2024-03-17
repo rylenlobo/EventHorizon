@@ -9,7 +9,7 @@ import Events from "./pages/Events";
 import Home from "./pages/Home";
 import Index from "./components/Index";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "./firebase/firbaseConfig";
+import { auth, fireDB } from "./firebase/firbaseConfig";
 import CommitteesContext from "./context/CommitteesContext";
 import BannersContext from "./context/BannersContext";
 import CategoriesContext from "./context/CategoriesContext";
@@ -18,12 +18,16 @@ import IndexEvents from "./context/IndexEvents";
 import EventBooking from "./pages/EventBooking";
 import EventFormData from "./context/EventFormData";
 import EPass from "./components/EPass";
+import Passes from "./pages/Passes";
 import { isMobile } from "react-device-detect";
 import { SignUpForm, ScanIdCard, ConfirmDetails } from "./pages/SignUp";
 import { defineCustomElements } from "@ionic/pwa-elements/loader";
 import CustomForm from "./components/CustomForm";
 import { CssBaseline } from "@mui/material";
 import PaymentsAndRegistration from "./pages/PaymentsAndRegistration";
+import ScanPass from "./pages/ScanPass";
+import { useEffect } from "react";
+import { setDoc } from "firebase/firestore";
 
 defineCustomElements(window);
 
@@ -74,23 +78,15 @@ const router = createBrowserRouter([
       },
       {
         path: "payments&regestrations",
-        element: (
-          <PrivateRouteLogin>
-            <PaymentsAndRegistration />
-          </PrivateRouteLogin>
-        ),
+        element: <PaymentsAndRegistration />,
       },
       {
         path: "passes",
-        element: (
-          <PrivateRouteLogin>
-            <PaymentsAndRegistration />
-          </PrivateRouteLogin>
-        ),
+        element: <Passes />,
       },
       {
-        path: "passes/:passid",
-        element: <EPass />,
+        path: "scan",
+        element: <ScanPass />,
       },
     ],
   },

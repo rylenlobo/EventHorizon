@@ -25,9 +25,9 @@ import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import EastRoundedIcon from "@mui/icons-material/EastRounded";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { doc, collection, addDoc } from "firebase/firestore";
+import { doc, collection, addDoc, query, where } from "firebase/firestore";
 import { auth, fireDB } from "../firebase/firbaseConfig";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDocumentData, useCollection } from "react-firebase-hooks/firestore";
 import { ToastContainer, toast } from "react-toastify";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -64,18 +64,22 @@ const EventDetails = ({ props }) => {
   );
 };
 
-const BuyNow = ({ props, id }) => {
+const BuyNow = ({ props, id, uid }) => {
+  const param = useParams();
   const [user] = useAuthState(auth);
-  const [uid, setUid] = useState(" ");
+  // const [uid, setUid] = useState(" ");
 
-  useEffect(() => {
-    if (user) {
-      setUid(user.uid);
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) {
+  //     setUid(user.uid);
+  //   }
+  // }, [user]);
 
   const [data, loading] = useCollection(
-    collection(fireDB, "users", uid, "paymentsandRegistrations")
+    query(
+      collection(fireDB, "users", uid, "paymentsandRegistrations"),
+      where("status", "==", "success")
+    )
   );
 
   const navigate = useNavigate();
@@ -106,6 +110,7 @@ const BuyNow = ({ props, id }) => {
           size="large"
           sx={{}}
           onClick={() => {
+            console.log("clicked");
             const isEventAlreadyRegistered = data.docs.some(
               (doc) => doc.data().event_name === props.event_name
             );
@@ -139,9 +144,9 @@ const BuyNow = ({ props, id }) => {
                 event_venue: props.college + " | " + props.venue,
                 qrcode: CryptoJS.SHA256(
                   JSON.stringify({
-                    amount: props.amount,
+                    amount: props.price,
                     user: uid,
-                    event_image: uid,
+                    event_image: props.event_image,
                     event_name: props.event_name,
                     event_date: props.date,
                     event_time: props.time.start + " - " + props.time.end,
@@ -149,6 +154,23 @@ const BuyNow = ({ props, id }) => {
                   })
                 ).toString(),
               });
+              await addDoc(
+                collection(fireDB, "events", param.eventid, "generatedPasses"),
+                {
+                  user: uid,
+                  qrcode: CryptoJS.SHA256(
+                    JSON.stringify({
+                      amount: props.price,
+                      user: uid,
+                      event_image: props.event_image,
+                      event_name: props.event_name,
+                      event_date: props.date,
+                      event_time: props.time.start + " - " + props.time.end,
+                      event_venue: props.college + " | " + props.venue,
+                    })
+                  ).toString(),
+                }
+              );
             };
 
             if (!user) {
@@ -176,12 +198,13 @@ const BuyNow = ({ props, id }) => {
               Number(props.price),
               props.event_name,
               uid,
-              id,
+              param.eventid,
               props.event_image,
               props.college + "|" + props.venue,
               props.date,
               props.time.start + " - " + props.time.end
             );
+
             setTimeout(() => {
               navigate("/payments&regestrations");
             }, 2000);
@@ -197,7 +220,7 @@ const BuyNow = ({ props, id }) => {
 
 const EventBooking = () => {
   const param = useParams();
-
+  const [user, user_loading] = useAuthState(auth);
   const [data, loading] = useDocumentData(doc(fireDB, "events", param.eventid));
 
   console.log(data);
@@ -287,7 +310,7 @@ const EventBooking = () => {
               </AccordionDetails>
             </Accordion>
           </div>
-          <BuyNow props={data} id={param.eventid} />
+          <BuyNow props={data} id={param.eventid} uid={user.uid} />
         </Box>
       </Paper>
     </Fade>

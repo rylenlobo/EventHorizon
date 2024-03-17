@@ -44,7 +44,8 @@ export const redirectPaymentGateway = async (
   eventImage,
   eventVenue,
   eventDate,
-  eventTime
+  eventTime,
+  formdata
 ) => {
   const IST = new Date().toLocaleString("en-US", {
     timeZone: "Asia/Kolkata",
@@ -98,6 +99,10 @@ export const redirectPaymentGateway = async (
         await addDoc(collection(fireDB, "events", eventID, "generatedPasses"), {
           user: userID,
           qrcode: data.razorpay_signature,
+        });
+        await addDoc(collection(fireDB, "events", eventID, "registration"), {
+          ...formdata,
+          price: amount,
         });
       }
     }
