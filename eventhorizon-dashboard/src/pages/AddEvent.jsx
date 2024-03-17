@@ -24,6 +24,7 @@ const AddEvent = () => {
     category: "",
     date: "",
     instructions: [""],
+    committee: "", // Added committee field
   });
 
   const handleChange = (e, index) => {
@@ -60,6 +61,8 @@ const AddEvent = () => {
       category: eventData.category,
       date: eventData.date,
       instructions: eventData.instructions,
+      committee: eventData.committee,
+      form:{} // Added committee field
     })
       .then((docRef) => {
         console.log("Event added with ID: ", docRef.id);
@@ -75,6 +78,8 @@ const AddEvent = () => {
       category: "",
       date: "",
       instructions: [""],
+      committee: "", 
+     // Added committee field
     });
   };
 
@@ -145,6 +150,26 @@ const AddEvent = () => {
               setEventData({ ...eventData, date: e.target.value })
             }
           />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            select
+            name="committee"
+            label="Committee"
+            fullWidth
+            value={eventData.committee}
+            onChange={(e) =>
+              setEventData({ ...eventData, committee: e.target.value })
+            }
+          >
+            <MenuItem value="ISTE">ISTE</MenuItem>
+            <MenuItem value="ITSA">ITSA</MenuItem>
+            <MenuItem value="IEEE">IEEE</MenuItem>
+            <MenuItem value="EESA">EESA</MenuItem>
+            <MenuItem value="MESA">MESA</MenuItem>
+            <MenuItem value="SC">SC</MenuItem>
+            <MenuItem value="others">Others</MenuItem>
+          </TextField>
         </Grid>
         <Grid item xs={12}>
           <Typography variant="subtitle1">Instructions:</Typography>
