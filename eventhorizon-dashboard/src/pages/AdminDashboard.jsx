@@ -3,7 +3,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { fireDB } from "../firebase/firebaseConfig";
 import { Card, CardMedia, CardContent, Typography, Button, Grid, FormControl, InputLabel, Select, MenuItem, Table, TableHead, TableBody, TableRow, TableCell } from "@mui/material";
 import DashboardGraph from "./DashboardGraph";
-
+import RegisteredUser from "./GetRegistrations";
 const AdminDashboard = () => {
   const [recentEvents, setRecentEvents] = useState([]);
   const [registeredUsers, setRegisteredUsers] = useState([]);
@@ -67,13 +67,15 @@ const AdminDashboard = () => {
       ...prevFilterOptions,
       [name]: value
     }));
+
+    applyFilters(); // Apply filters whenever a dropdown value changes
   };
 
   const applyFilters = () => {
     let filteredData = registeredUsers;
 
     for (const key in filterOptions) {
-      if (filterOptions[key]) {
+      if (filterOptions[key] !== 'All') {
         const filterValue = filterOptions[key].toLowerCase();
         filteredData = filteredData.filter(user =>
           user[key] && user[key].toLowerCase().includes(filterValue)
@@ -123,7 +125,7 @@ const AdminDashboard = () => {
       <div style={{ padding: "30px" }}>
       <DashboardGraph />
       </div>
-      <Typography variant="h5" gutterBottom style={{ marginTop: "20px" }}>Filter Users</Typography>
+      {/* <Typography variant="h5" gutterBottom style={{ marginTop: "20px" }}>Filter Users</Typography>
       <Grid container spacing={2} alignItems="center">
         <Grid item>
           <FormControl variant="outlined" size="small">
@@ -158,7 +160,7 @@ const AdminDashboard = () => {
             >
               <MenuItem value="All">All</MenuItem>
               <MenuItem value="CMPN">CMPN</MenuItem>
-              <MenuItem value="IT">IT</MenuItem>
+              <MenuItem value="INFT">INFT</MenuItem>
               <MenuItem value="EXTC">EXTC</MenuItem>
               <MenuItem value="ELEC">ELEC</MenuItem>
               <MenuItem value="MECH">MECH</MenuItem>
@@ -187,13 +189,13 @@ const AdminDashboard = () => {
         </Grid>
         <Grid item>
           <FormControl variant="outlined" size="small">
-            <InputLabel htmlFor="division">Division</InputLabel>
+            <InputLabel htmlFor="div">Division</InputLabel>
             <Select
               sx={{ width: 200 }}
               value={filterOptions.division}
               onChange={handleFilterChange}
               inputProps={{
-                name: 'division',
+                name: 'div',
                 id: 'division',
               }}
             >
@@ -203,13 +205,13 @@ const AdminDashboard = () => {
             </Select>
           </FormControl>
         </Grid>
-      </Grid>
-      <Typography variant="h5" gutterBottom style={{ marginTop: "20px" }}>Registered Users</Typography>
-      <Table>
+      </Grid> */}
+      <Typography variant="h5" gutterBottom style={{ marginTop: "10px" }}>Registered Users</Typography>
+      {/* <Table>
         <TableHead>
           <TableRow>
             <TableCell>Name</TableCell>
-            <TableCell>Registered At</TableCell>
+            <TableCell>PID</TableCell>
             <TableCell>Department</TableCell>
             <TableCell>Event Name</TableCell>
             <TableCell>Year</TableCell>
@@ -220,7 +222,7 @@ const AdminDashboard = () => {
           {filteredUsers.map((user, index) => (
             <TableRow key={index}>
               <TableCell>{user.name}</TableCell>
-              <TableCell>{user.at}</TableCell>
+              <TableCell>{user.pid}</TableCell>
               <TableCell>{user.department}</TableCell>
               <TableCell>{user.event_name}</TableCell>
               <TableCell>{user.year}</TableCell>
@@ -228,7 +230,10 @@ const AdminDashboard = () => {
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+      </Table> */}
+     
+      <RegisteredUser></RegisteredUser>
+   
     </div>
   );
 };
