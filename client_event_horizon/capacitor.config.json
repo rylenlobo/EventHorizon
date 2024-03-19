@@ -5,5 +5,11 @@
   "server": {
     "androidScheme": "https",
     "allowNavigation": ["https://c583-49-36-101-36.ngrok-free.app"]
+  },
+  "plugins": {
+    "PrivacyScreen": {
+      "enable": false,
+      "imageName": ""
+    }
   }
 }

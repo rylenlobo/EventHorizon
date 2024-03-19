@@ -12,6 +12,8 @@
     "ionic:serve": "npm run dev"
   },
   "dependencies": {
+    "@capacitor-community/privacy-screen": "^4.2.4",
+    "@capacitor-mlkit/barcode-scanning": "5.4.0",
     "@capacitor/android": "5.6.0",
     "@capacitor/app": "5.0.7",
     "@capacitor/camera": "^5.0.9",

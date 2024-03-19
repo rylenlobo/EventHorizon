@@ -14,6 +14,7 @@ import ConfirmationNumberRoundedIcon from "@mui/icons-material/ConfirmationNumbe
 import WorkHistoryRoundedIcon from "@mui/icons-material/WorkHistoryRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import EmailRoundedIcon from "@mui/icons-material/EmailRounded";
+import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -39,6 +40,7 @@ export default function Sidebar({ toggleClose, isOpen }) {
       role="presentation"
       display="flex"
       flexDirection="column"
+      justifyContent="space-between"
     >
       {user ? (
         <List>
@@ -162,6 +164,21 @@ export default function Sidebar({ toggleClose, isOpen }) {
               <WorkHistoryRoundedIcon />
             </ListItemIcon>
             <ListItemText primary="Payments / Registrations" />
+          </ListItemButton>
+        </ListItem>
+      </List>
+      <List>
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              navigate("scan");
+              toggleClose();
+            }}
+          >
+            <ListItemIcon>
+              <QrCodeScannerIcon />
+            </ListItemIcon>
+            <ListItemText primary="Scan E-Pass" />
           </ListItemButton>
         </ListItem>
       </List>

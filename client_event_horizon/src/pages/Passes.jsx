@@ -10,12 +10,18 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
+import { PrivacyScreen } from "@capacitor-community/privacy-screen";
+
+const enable = async () => {
+  await PrivacyScreen.enable();
+};
 
 const Passes = () => {
   const [user] = useAuthState(auth);
   const [uid, setUid] = useState(" ");
 
   useEffect(() => {
+    enable();
     if (user) {
       setUid(user.uid);
     }
