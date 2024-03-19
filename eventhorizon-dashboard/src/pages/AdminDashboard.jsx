@@ -89,7 +89,8 @@ const AdminDashboard = () => {
   }, [filterOptions]);
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ padding: "50px" }}>
+      
       <Typography variant="h5" gutterBottom>Recent Events</Typography>
       <Grid container spacing={3}>
         {recentEvents.map((event, index) => (
@@ -119,7 +120,9 @@ const AdminDashboard = () => {
           </Grid>
         ))}
       </Grid>
+      <div style={{ padding: "30px" }}>
       <DashboardGraph />
+      </div>
       <Typography variant="h5" gutterBottom style={{ marginTop: "20px" }}>Filter Users</Typography>
       <Grid container spacing={2} alignItems="center">
         <Grid item>
