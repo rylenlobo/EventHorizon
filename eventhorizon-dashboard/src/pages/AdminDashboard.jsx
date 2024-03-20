@@ -1,18 +1,33 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { fireDB } from "../firebase/firebaseConfig";
-import { Card, CardMedia, CardContent, Typography, Button, Grid, FormControl, InputLabel, Select, MenuItem, Table, TableHead, TableBody, TableRow, TableCell } from "@mui/material";
+import {
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  Button,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+} from "@mui/material";
 import DashboardGraph from "./DashboardGraph";
-import RegisteredUser from "./GetRegistrations";
+
 const AdminDashboard = () => {
   const [recentEvents, setRecentEvents] = useState([]);
   const [registeredUsers, setRegisteredUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [filterOptions, setFilterOptions] = useState({
-    eventName: 'All',
-    department: 'All',
-    year: 'All',
-    division: 'All'
+    department: "All",
+    year: "All",
+    division: "All",
   });
 
   useEffect(() => {
@@ -45,7 +60,12 @@ const AdminDashboard = () => {
 
       for (const doc of eventsSnapshot.docs) {
         const eventId = doc.id;
-        const registrationCollection = collection(fireDB, "events", eventId, "registration");
+        const registrationCollection = collection(
+          fireDB,
+          "events",
+          eventId,
+          "registration"
+        );
         const registrationSnapshot = await getDocs(registrationCollection);
 
         registrationSnapshot.forEach((doc) => {
@@ -65,7 +85,7 @@ const AdminDashboard = () => {
     const { name, value } = event.target;
     setFilterOptions((prevFilterOptions) => ({
       ...prevFilterOptions,
-      [name]: value
+      [name]: value,
     }));
 
     applyFilters(); // Apply filters whenever a dropdown value changes
@@ -75,10 +95,10 @@ const AdminDashboard = () => {
     let filteredData = registeredUsers;
 
     for (const key in filterOptions) {
-      if (filterOptions[key] !== 'All') {
+      if (filterOptions[key] !== "All") {
         const filterValue = filterOptions[key].toLowerCase();
-        filteredData = filteredData.filter(user =>
-          user[key] && user[key].toLowerCase().includes(filterValue)
+        filteredData = filteredData.filter(
+          (user) => user[key] && user[key].toLowerCase().includes(filterValue)
         );
       }
     }
@@ -92,8 +112,9 @@ const AdminDashboard = () => {
 
   return (
     <div style={{ padding: "50px" }}>
-      
-      <Typography variant="h5" gutterBottom>Recent Events</Typography>
+      <Typography variant="h5" gutterBottom>
+        Recent Events
+      </Typography>
       <Grid container spacing={3}>
         {recentEvents.map((event, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
@@ -112,9 +133,19 @@ const AdminDashboard = () => {
                   Venue: {event.venue}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Date: {event.date + " " + event.day + " " + event.time.start +" To " + event.time.end}
+                  Date:{" "}
+                  {event.date +
+                    " " +
+                    event.day +
+                    " " +
+                    event.time.start +
+                    " To " +
+                    event.time.end}
                 </Typography>
-                <Button href={`/report/${event.event_id}`} sx={{ color: "black", float: "right" }}>
+                <Button
+                  href={`/report/${event.event_id}`}
+                  sx={{ color: "black", float: "right" }}
+                >
                   View
                 </Button>
               </CardContent>
@@ -123,9 +154,11 @@ const AdminDashboard = () => {
         ))}
       </Grid>
       <div style={{ padding: "30px" }}>
-      <DashboardGraph />
+        <DashboardGraph />
       </div>
-      {/* <Typography variant="h5" gutterBottom style={{ marginTop: "20px" }}>Filter Users</Typography>
+      <Typography variant="h5" gutterBottom style={{ marginTop: "20px" }}>
+        Filter Users
+      </Typography>
       <Grid container spacing={2} alignItems="center">
         <Grid item>
           <FormControl variant="outlined" size="small">
@@ -135,13 +168,15 @@ const AdminDashboard = () => {
               value={filterOptions.eventName}
               onChange={handleFilterChange}
               inputProps={{
-                name: 'eventName',
-                id: 'eventName',
+                name: "eventName",
+                id: "eventName",
               }}
             >
               <MenuItem value="All">All</MenuItem>
               {recentEvents.map((event, index) => (
-                <MenuItem key={index} value={event.event_name}>{event.event_name}</MenuItem>
+                <MenuItem key={index} value={event.event_name}>
+                  {event.event_name}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -154,8 +189,8 @@ const AdminDashboard = () => {
               value={filterOptions.department}
               onChange={handleFilterChange}
               inputProps={{
-                name: 'department',
-                id: 'department',
+                name: "department",
+                id: "department",
               }}
             >
               <MenuItem value="All">All</MenuItem>
@@ -175,8 +210,8 @@ const AdminDashboard = () => {
               value={filterOptions.year}
               onChange={handleFilterChange}
               inputProps={{
-                name: 'year',
-                id: 'year',
+                name: "year",
+                id: "year",
               }}
             >
               <MenuItem value="All">All</MenuItem>
@@ -195,8 +230,8 @@ const AdminDashboard = () => {
               value={filterOptions.division}
               onChange={handleFilterChange}
               inputProps={{
-                name: 'div',
-                id: 'division',
+                name: "div",
+                id: "division",
               }}
             >
               <MenuItem value="All">All</MenuItem>
@@ -205,9 +240,11 @@ const AdminDashboard = () => {
             </Select>
           </FormControl>
         </Grid>
-      </Grid> */}
-      <Typography variant="h5" gutterBottom style={{ marginTop: "10px" }}>Registered Users</Typography>
-      {/* <Table>
+      </Grid>
+      <Typography variant="h5" gutterBottom style={{ marginTop: "10px" }}>
+        Registered Users
+      </Typography>
+      <Table>
         <TableHead>
           <TableRow>
             <TableCell>Name</TableCell>
@@ -230,10 +267,7 @@ const AdminDashboard = () => {
             </TableRow>
           ))}
         </TableBody>
-      </Table> */}
-     
-      <RegisteredUser></RegisteredUser>
-   
+      </Table>
     </div>
   );
 };
