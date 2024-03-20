@@ -5,10 +5,13 @@ import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
 import Sidebar from "../components/Sidebar";
 
 import { Outlet } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Home = () => {
   const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => {
+    scrollTo(0, 0);
+  });
 
   return (
     <>

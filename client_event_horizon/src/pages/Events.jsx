@@ -11,6 +11,7 @@ import {
   Checkbox,
   Button,
   Fade,
+  Paper,
 } from "@mui/material";
 import "swiper/css";
 import "swiper/css/free-mode";
@@ -29,16 +30,19 @@ const Events = () => {
     useContext(categoriesContext);
 
   const [searchText, setSearchText] = useState("");
-  const [searchResult, search_loading] = useCollection(
-    query(collection(fireDB, "events"), where("event_name", "==", searchText))
-  );
 
   const { technical, workshops, sports, seminar, cultural } = state;
 
   const [events, events_loading] = useCollection(
-    filter && filter.length > 0
-      ? query(collection(fireDB, "events"), where("category", "in", filter))
-      : query(collection(fireDB, "events"))
+    query(
+      filter && filter.length > 0
+        ? query(collection(fireDB, "events"), where("category", "in", filter))
+        : query(
+            collection(fireDB, "events"),
+            where("event_name", ">=", searchText),
+            where("event_name", "<", searchText + "\uf8ff")
+          )
+    )
   );
 
   useEffect(() => {
@@ -189,7 +193,7 @@ const Events = () => {
           setIsOpen(false);
         }}
       >
-        <Box sx={{ borderRadius: "50%" }}>
+        <Box>
           <Typography variant="h6" color="initial" p={2}>
             Categories
           </Typography>

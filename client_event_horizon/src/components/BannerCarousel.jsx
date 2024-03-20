@@ -6,6 +6,9 @@ import "swiper/css";
 import { useContext } from "react";
 import Skeleton from "@mui/material/Skeleton";
 import { bannerContext } from "../context/BannersContext";
+import { Autoplay, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 
 const BannerCarousel = () => {
   const { banner, banner_loading } = useContext(bannerContext);
@@ -23,7 +26,14 @@ const BannerCarousel = () => {
         <Skeleton height={200} />
       ) : (
         <Swiper
-          autoplay={true}
+          className="my-swiper"
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+          }}
+          pagination={{
+            clickable: true,
+          }}
           style={{ borderRadius: 12 }}
           slidesPerView={1}
           spaceBetween={10}
@@ -33,6 +43,7 @@ const BannerCarousel = () => {
               spaceBetween: 20,
             },
           }}
+          modules={[Pagination, Autoplay]}
         >
           {banner.docs.map((doc) => {
             return (

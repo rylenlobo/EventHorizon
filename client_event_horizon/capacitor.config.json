@@ -10,6 +10,9 @@
     "PrivacyScreen": {
       "enable": false,
       "imageName": ""
+    },
+    "FirebaseMessaging": {
+      "presentationOptions": ["badge", "sound", "alert"]
     }
   }
 }

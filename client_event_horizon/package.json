@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@capacitor-community/privacy-screen": "^4.2.4",
+    "@capacitor-firebase/messaging": "5.4.1",
     "@capacitor-mlkit/barcode-scanning": "5.4.0",
     "@capacitor/android": "5.6.0",
     "@capacitor/app": "5.0.7",
@@ -34,7 +35,7 @@
     "axios": "^1.6.7",
     "capacitor-razorpay": "github:razorpay/razorpay-capacitor",
     "crypto-js": "^4.2.0",
-    "firebase": "^10.8.0",
+    "firebase": "^10.9.0",
     "formik": "^2.4.5",
     "material-icons": "^1.13.12",
     "mui-image": "^1.0.7",

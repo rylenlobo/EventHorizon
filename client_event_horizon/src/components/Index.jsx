@@ -16,8 +16,9 @@ import { CategoriesSkeleton } from "./Categories";
 import { useNavigate } from "react-router-dom";
 import { indexEvents } from "../context/IndexEvents";
 import { TransitionGroup } from "react-transition-group";
-import { fireDB } from "../firebase/firbaseConfig";
-import { doc, setDoc } from "firebase/firestore";
+import "swiper/css";
+import "swiper/css/pagination";
+import { Autoplay } from "swiper/modules";
 
 const Index = () => {
   const { committees, committees_loading } = useContext(committeesContext);
@@ -113,7 +114,6 @@ const Index = () => {
                 slidesOffsetBefore={16}
                 slidesOffsetAfter={16}
                 spaceBetween={50}
-                freeMode={true}
                 modules={[FreeMode]}
               >
                 {categories_loading ? (

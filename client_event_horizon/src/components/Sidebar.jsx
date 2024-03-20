@@ -118,14 +118,7 @@ export default function Sidebar({ toggleClose, isOpen }) {
             <ListItemText primary="Home" sx={{ fontSize: 100 }} />
           </ListItemButton>
         </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <NotificationsRoundedIcon />
-            </ListItemIcon>
-            <ListItemText primary="Notifications" />
-          </ListItemButton>
-        </ListItem>
+
         <ListItem disablePadding>
           <ListItemButton
             onClick={() => {
