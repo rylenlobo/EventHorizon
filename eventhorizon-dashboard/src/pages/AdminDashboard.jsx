@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, where, query } from "firebase/firestore";
 import { fireDB } from "../firebase/firebaseConfig";
 import {
   Card,
@@ -20,14 +20,16 @@ import {
 } from "@mui/material";
 import DashboardGraph from "./DashboardGraph";
 
+
 const AdminDashboard = () => {
   const [recentEvents, setRecentEvents] = useState([]);
   const [registeredUsers, setRegisteredUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [filterOptions, setFilterOptions] = useState({
+    eventName: "All", // Modified default value to "All"
     department: "All",
     year: "All",
-    division: "All",
+    div: "All",
   });
 
   useEffect(() => {
@@ -81,14 +83,40 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleFilterChange = (event) => {
+  const handleFilterChange = async (event) => {
     const { name, value } = event.target;
     setFilterOptions((prevFilterOptions) => ({
       ...prevFilterOptions,
       [name]: value,
     }));
 
-    applyFilters(); // Apply filters whenever a dropdown value changes
+    if (name === "eventName" && value !== "All") {
+      // Fetch registration users for the selected event
+      try {
+        const eventId = recentEvents.find((event) => event.event_name === value)?.event_id;
+        if (eventId) {
+          const registrationCollection = collection(
+            fireDB,
+            "events",
+            eventId,
+            "registration"
+          );
+          const registrationSnapshot = await getDocs(registrationCollection);
+          const usersData = [];
+
+          registrationSnapshot.forEach((doc) => {
+            const userData = doc.data();
+            usersData.push({ ...userData, eventId, user_id: doc.id });
+          });
+
+          setFilteredUsers(usersData);
+        }
+      } catch (error) {
+        console.error("Error fetching registration users for the selected event:", error);
+      }
+    } else {
+      applyFilters(); // Apply filters whenever a dropdown value changes
+    }
   };
 
   const applyFilters = () => {
@@ -159,6 +187,7 @@ const AdminDashboard = () => {
       <Typography variant="h5" gutterBottom style={{ marginTop: "20px" }}>
         Filter Users
       </Typography>
+     
       <Grid container spacing={2} alignItems="center">
         <Grid item>
           <FormControl variant="outlined" size="small">
@@ -200,7 +229,7 @@ const AdminDashboard = () => {
               <MenuItem value="ELEC">ELEC</MenuItem>
               <MenuItem value="MECH">MECH</MenuItem>
             </Select>
-          </FormControl>
+            </FormControl>
         </Grid>
         <Grid item>
           <FormControl variant="outlined" size="small">
@@ -250,22 +279,28 @@ const AdminDashboard = () => {
             <TableCell>Name</TableCell>
             <TableCell>PID</TableCell>
             <TableCell>Department</TableCell>
-            <TableCell>Event Name</TableCell>
+            {/* <TableCell>Event Name</TableCell> */}
             <TableCell>Year</TableCell>
             <TableCell>Division</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {filteredUsers.map((user, index) => (
-            <TableRow key={index}>
-              <TableCell>{user.name}</TableCell>
-              <TableCell>{user.pid}</TableCell>
-              <TableCell>{user.department}</TableCell>
-              <TableCell>{user.event_name}</TableCell>
-              <TableCell>{user.year}</TableCell>
-              <TableCell>{user.div}</TableCell>
-            </TableRow>
-          ))}
+          {filteredUsers.length === 0 ? (
+            <Typography variant="h5" style={{ marginTop: "20px" }}>
+              Loading...
+            </Typography>
+          ) : (
+            filteredUsers.map((user, index) => (
+              <TableRow key={index}>
+                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.pid}</TableCell>
+                <TableCell>{user.department}</TableCell>
+                {/* <TableCell>{user.event_name}</TableCell> */}
+                <TableCell>{user.year}</TableCell>
+                <TableCell>{user.div}</TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>
@@ -289,3 +324,4 @@ const getBgColor = (index) => {
 };
 
 export default AdminDashboard;
+

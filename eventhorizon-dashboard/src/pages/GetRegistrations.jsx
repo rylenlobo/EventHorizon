@@ -5,37 +5,20 @@ import { Card, CardContent, Typography, Button, Grid, FormControl, InputLabel, S
 import DashboardGraph from "./DashboardGraph";
 
 const RegisteredUser = () => {
-  const [recentEvents, setRecentEvents] = useState([]);
+
   const [registeredUsers, setRegisteredUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [filterOptions, setFilterOptions] = useState({
-    eventName: 'All',
-    department: 'All',
-    year: 'All',
-    division: 'All'
+    department: "All",
+    year: "All",
+    division: "All",
   });
 
   useEffect(() => {
-    fetchRecentEvents();
+
     fetchRegisteredUsers();
   }, []);
 
-  const fetchRecentEvents = async () => {
-    try {
-      const eventsCollection = collection(fireDB, "events");
-      const snapshot = await getDocs(eventsCollection);
-      const eventsData = [];
-
-      snapshot.forEach((doc) => {
-        const event = doc.data();
-        eventsData.push({ ...event, event_id: doc.id });
-      });
-
-      setRecentEvents(eventsData);
-    } catch (error) {
-      console.error("Error fetching recent events:", error);
-    }
-  };
 
   const fetchRegisteredUsers = async () => {
     try {
@@ -45,7 +28,12 @@ const RegisteredUser = () => {
 
       for (const doc of eventsSnapshot.docs) {
         const eventId = doc.id;
-        const registrationCollection = collection(fireDB, "events", eventId, "registration");
+        const registrationCollection = collection(
+          fireDB,
+          "events",
+          eventId,
+          "registration"
+        );
         const registrationSnapshot = await getDocs(registrationCollection);
 
         registrationSnapshot.forEach((doc) => {
@@ -65,7 +53,7 @@ const RegisteredUser = () => {
     const { name, value } = event.target;
     setFilterOptions((prevFilterOptions) => ({
       ...prevFilterOptions,
-      [name]: value
+      [name]: value,
     }));
 
     applyFilters(); // Apply filters whenever a dropdown value changes
@@ -75,10 +63,10 @@ const RegisteredUser = () => {
     let filteredData = registeredUsers;
 
     for (const key in filterOptions) {
-      if (filterOptions[key] !== 'All') {
+      if (filterOptions[key] !== "All") {
         const filterValue = filterOptions[key].toLowerCase();
-        filteredData = filteredData.filter(user =>
-          user[key] && user[key].toLowerCase().includes(filterValue)
+        filteredData = filteredData.filter(
+          (user) => user[key] && user[key].toLowerCase().includes(filterValue)
         );
       }
     }
@@ -90,10 +78,11 @@ const RegisteredUser = () => {
     applyFilters();
   }, [filterOptions]);
 
+
   return (
     <div style={{ padding: "10px" }}>
-    
-      <Typography variant="h5" gutterBottom style={{ marginTop: "20px" , paddingBottom:10 }}>Filter Users</Typography>
+
+      <Typography variant="h5" gutterBottom style={{ marginTop: "20px", paddingBottom: 10 }}>Filter Users</Typography>
       <Grid container spacing={2} alignItems="center">
         <Grid item>
           <FormControl variant="outlined" size="small">
@@ -176,27 +165,30 @@ const RegisteredUser = () => {
       </Grid>
       <Typography variant="h5" gutterBottom style={{ marginTop: "20px" }}>Registered Users</Typography>
       <Grid container spacing={2}>
-        {filteredUsers.map((user, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="h6" component="h2">
-                  {user.name}
-                </Typography>
-                <Typography color="textSecondary" gutterBottom>
-                  {user.department} | {user.year} | {user.div}
-                </Typography>
-                <Typography variant="body2" component="p">
-                  Event: {user.event_name}
-                </Typography>
-                <Typography variant="body2" component="p">
-                  PID: {user.pid}
-                </Typography>
-              </CardContent>
-              <Button href={`/user/${user.user_id}`} size="small">View Details</Button>
-            </Card>
-          </Grid>
-        ))}
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>PID</TableCell>
+              <TableCell>Department</TableCell>
+              <TableCell>Event Name</TableCell>
+              <TableCell>Year</TableCell>
+              <TableCell>Division</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            { filteredUsers.map((user, index) => (
+              <TableRow key={index}>
+                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.pid}</TableCell>
+                <TableCell>{user.department}</TableCell>
+                <TableCell>{user.event_name}</TableCell>
+                <TableCell>{user.year}</TableCell>
+                <TableCell>{user.div}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </Grid>
     </div>
   );

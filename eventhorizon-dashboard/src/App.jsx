@@ -6,7 +6,7 @@ import EventBooking from "./pages/EventBooking";
 import AddPasses from "./pages/AddPasses";
 import Home from "./pages/Home";
 import AddReport from "./pages/AddReport";
-import EventReportPage from "./pages/ShowReport"; // Import the EventReportPage component
+import EventReportPage from "./pages/EventReport"; // Import the EventReportPage component
 
 import {
   createBrowserRouter,
