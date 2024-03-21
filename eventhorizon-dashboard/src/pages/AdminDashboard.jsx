@@ -162,7 +162,7 @@ const AdminDashboard = () => {
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
                   Date:{" "}
-                  {event.date +
+                  {event.date.startDate +
                     " " +
                     event.day +
                     " " +
@@ -309,7 +309,7 @@ const AdminDashboard = () => {
 
 // Helper function to get background color based on index
 const getBgColor = (index) => {
-  switch (index) {
+  switch (index%4) {
     case 0:
       return "#FFEBEE"; // Light Red
     case 1:

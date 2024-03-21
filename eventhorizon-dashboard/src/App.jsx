@@ -3,7 +3,6 @@ import { auth } from "./firebase/firebaseConfig";
 import { defineCustomElements } from "@ionic/pwa-elements/loader";
 import AddEvent from "./pages/AddEvent";
 import EventBooking from "./pages/EventBooking";
-import AddPasses from "./pages/AddPasses";
 import Home from "./pages/Home";
 import AddReport from "./pages/AddReport";
 import EventReportPage from "./pages/EventReport"; // Import the EventReportPage component
@@ -13,7 +12,7 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import GetAllRegisteredUsers from "./pages/GetRegistrations";
+
 import AdminDashboard from "./pages/AdminDashboard";
 
 defineCustomElements(window);
@@ -40,23 +39,17 @@ const router = createBrowserRouter([
         path: "add-report",
         element: <AddReport />,
       },
-      {
-        path: "add-passes",
-        element: <AddPasses />,
-      },
+     
       {
         path: "report/:eventId",
         element: <EventReportPage/> ,
       },
-      {
-        path: "registrations",
-        element: <GetAllRegisteredUsers/>,
-      },
+     
       // Add a new route for the event report page
-      {
-        path: "events/5sQAbEfQgN1iWgRQCX94/report",
-        element: <EventReportPage />,
-      },
+      // {
+      //   path: "events/5sQAbEfQgN1iWgRQCX94/report",
+      //   element: <EventReportPage />,
+      // },
     ],
   },
 ]);

@@ -134,22 +134,11 @@ export default function Sidebar({ toggleClose, isOpen }) {
           </ListItemButton>
         </ListItem>
 
+      
         <ListItem disablePadding>
           <ListItemButton
           onClick={() => {
-            navigate("add-passes");
-            toggleClose();
-          }}>
-            <ListItemIcon>
-              <ConfirmationNumberRoundedIcon fontSize="large" />
-            </ListItemIcon>
-            <ListItemText primary="Add Passes" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton
-          onClick={() => {
-            navigate("events/5sQAbEfQgN1iWgRQCX94/report");
+            navigate("report/Ix2pUWjPcy4QLi45l1jO");
             toggleClose();
           }}>
             <ListItemIcon>
@@ -158,14 +147,7 @@ export default function Sidebar({ toggleClose, isOpen }) {
             <ListItemText primary="Event Report" />
           </ListItemButton>
         </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              <WorkHistoryRoundedIcon fontSize="large" />
-            </ListItemIcon>
-            <ListItemText primary=" Past Bookings / Registrations" />
-          </ListItemButton>
-        </ListItem>
+    
       </List>
     </Box>
   );

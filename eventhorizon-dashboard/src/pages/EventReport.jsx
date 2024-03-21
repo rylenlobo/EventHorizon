@@ -49,15 +49,19 @@ const EventReportPage = () => {
   }, [eventId]);
 
   if (!eventReport) {
-    return <div>Loading...</div>;
+    return <>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+  <div>Loading Report ...</div>
+</div></>;
   }
   // Generate series data for PieChart
   const seriesData = departmentData.map((department, index) => ({
     id: index,
-    value: (department.percentage * 100) / departmentData.length,
+    value: department.percentage,
     label: department.department,
   }));
   return (
+    
     <div style={{ margin: 10, padding: 20 }}>
       <Card>
         <CardMedia
@@ -68,23 +72,24 @@ const EventReportPage = () => {
         />
       </Card>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', padding: '10px' }}>
-        <Typography variant="h4" style={{ marginRight: 'auto' }}>{eventReport.event} Report</Typography>
-        <Typography variant="h4">Date: {new Date().toLocaleDateString()}</Typography>
+        <Typography variant="h5" style={{ marginRight: 'auto' }}>{eventReport.event} Report</Typography>
+        <Typography variant="h5">Date: {new Date().toLocaleDateString()}</Typography>
       </div>
       {/* Event Details Section */}
       <div>
-        <Typography sx={{ padding: 2 }} variant="h5" gutterBottom>Event Details</Typography>
-        <Typography sx={{ padding: 2 }} variant="body1" gutterBottom><strong>Event Name:</strong> {eventReport.event}</Typography>
-        <Typography sx={{ padding: 2 }} variant="body1" gutterBottom><strong>Description:</strong><br /> {eventReport.description}</Typography>
-        <Typography sx={{ padding: 2 }} variant="body1" gutterBottom><strong>Total Earning:</strong> {eventReport.earning}</Typography>
-        <Typography sx={{ padding: 2 }} variant="body1" gutterBottom><strong>Entry Fee:</strong> {eventReport.entryFee}</Typography>
-        <Typography sx={{ padding: 2 }} variant="body1" gutterBottom><strong>Total Expenditure:</strong> {eventReport.expenditure}</Typography>
+        <Typography sx={{ padding: 1 }} variant="h5" gutterBottom>Event Details</Typography>
+        <Typography sx={{ padding: 1 }} variant="body1" gutterBottom><strong>Event Name:</strong> {eventReport.event}</Typography>
+        <Typography sx={{ padding: 1 , textAlign: 'justify'}} variant="body1" gutterBottom><strong>Description:</strong><br /> {eventReport.description}</Typography>
+        <Typography sx={{ padding: 1 }} variant="body1" gutterBottom><strong>Total Earning:</strong> {eventReport.earning}</Typography>
+        <Typography sx={{ padding: 1 }} variant="body1" gutterBottom><strong>Entry Fee:</strong> {eventReport.entryFee}</Typography>
+        <Typography sx={{ padding: 1 }} variant="body1" gutterBottom><strong>Total Expenditure:</strong> {eventReport.expenditure}</Typography>
       </div>
 
       {/* Images Section */}
+      <div style={{paddingBottom:50}}>
       <Typography variant="h5" gutterBottom>Event Images</Typography>
       <Grid container spacing={5} padding={2} >
-        {eventReport.images.map((image, index) => (
+        {eventReport.imageUrls.map((image, index) => (
           <Grid item xs={6} sm={3} key={index}>
             <Card>
               <CardMedia
@@ -97,6 +102,7 @@ const EventReportPage = () => {
           </Grid>
         ))}
       </Grid>
+      </div>
       {/* Total Expenditure vs Earning Section */}
       <Grid container spacing={2}>
         <Grid item xs={12} sm={4}>
@@ -114,7 +120,7 @@ const EventReportPage = () => {
         </Grid>
         <Grid item xs={12} sm={4}>
           <Card style={{ width: "100%", height: "100%", alignContent: "center", paddingBottom: 20 }}>
-            <div style={{ paddingLeft: 100, paddingRight: 100, paddingTop: 10 }}>
+            <div style={{ paddingLeft: 50, paddingRight: 100, paddingTop: 10 }}>
               <Typography variant="h5" gutterBottom>Department-wise Registration Percentage</Typography>
               <PieChart
                 series={[{ data: seriesData }]}
@@ -140,8 +146,8 @@ const EventReportPage = () => {
           </Card>
         </Grid>
       </Grid>
-    </div>
-  );
+    </div> 
+  ) ;
 };
 
 export default EventReportPage;

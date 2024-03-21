@@ -131,12 +131,14 @@ const AddEvent = () => {
           return;
         }
       }
+     
       const eventRef = await addDoc(collection(fireDB, "events"), {
         event_image: eventData.event_image,
         event_name: eventData.event_name,
         price: eventData.price,
         category: eventData.category,
-
+        college:"St.Francis Institute of Technology",
+        day:"Wednesday",
         date: {
           startDate: eventData.startDate,
           endDate: eventData.endDate,
@@ -268,11 +270,11 @@ const AddEvent = () => {
                 setEventData({ ...eventData, category: e.target.value })
               }
             >
-              <MenuItem value="workshop">Workshop</MenuItem>
-              <MenuItem value="hackathon">Hackathon</MenuItem>
+              <MenuItem value="workshops">Workshop</MenuItem>
+              <MenuItem value="seminar">Seminar</MenuItem>
               <MenuItem value="sports">Sports</MenuItem>
-              <MenuItem value="competition">Competition</MenuItem>
-              <MenuItem value="others">Others</MenuItem>
+              <MenuItem value="cultural">Cultural</MenuItem>
+              <MenuItem value="technical">Technical</MenuItem>
             </TextField>
           </Grid>
           <Grid item xs={12} sm={6}>
