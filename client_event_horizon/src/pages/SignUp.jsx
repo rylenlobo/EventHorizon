@@ -33,6 +33,8 @@ import NumbersRoundedIcon from "@mui/icons-material/NumbersRounded";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { api } from "../../services/api";
+import id_card from "../assets/id_card.svg";
+import error_scan from "../assets/error_scan.svg";
 
 export default function SignUp() {
   const { stepCount, setStepCount, setResponseData } =
@@ -76,11 +78,12 @@ export default function SignUp() {
 }
 
 export const ScanIdCard = () => {
-  const { setResponseData } = useContext(signUpContext);
+  const { setResponseData, responseError, setResponseError } =
+    useContext(signUpContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(location.pathname); // log the current path
+
 
     if (!["/signup", "/signup/2", "/signup/3"].includes(location.pathname)) {
       setResponseData("");
@@ -105,7 +108,7 @@ export const ScanIdCard = () => {
         setResponseData(response.data);
       })
       .catch((error) => {
-        console.error(error);
+        setResponseError(error);
       });
 
     navigate("/signup/2");
@@ -113,11 +116,13 @@ export const ScanIdCard = () => {
 
   return (
     <>
-      <Box>
-        <Typography variant="h5" align="left" fontWeight={800} my={2} mb={2}>
+      <Box p={2}>
+        <Typography variant="h5" align="center" fontWeight={800} my={2} mb={2}>
           Scan your SFIT ID to autofill your personal details
         </Typography>
-        <Image src={id_scan} duration={0} sx={{ borderRadius: 2 }} />
+        <Box py={5}>
+          <img src={id_card} alt="No results found" width="280" height="280" />
+        </Box>
         <Button
           variant="contained"
           fullWidth
@@ -132,10 +137,46 @@ export const ScanIdCard = () => {
 };
 
 export const ConfirmDetails = () => {
-  const { responseData, setResponseData } = useContext(signUpContext);
+  const { responseData, setResponseData, responseError, setResponseError } =
+    useContext(signUpContext);
   const navigate = useNavigate();
 
-  if (!responseData) {
+  if (responseError) {
+    return (
+      <>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          flexDirection="column"
+          style={{ height: "70vh" }}
+          gap={5}
+        >
+          <img
+            src={error_scan}
+            alt="No results found"
+            width="280"
+            height="280"
+          />
+          <Typography variant="h6" color="initial" align="center">
+            There was an error scanning your ID card
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setResponseData("");
+              setResponseError("");
+              navigate(-1);
+            }}
+          >
+            Rescan
+          </Button>
+        </Box>
+      </>
+    );
+  }
+
+  if (responseData === "") {
     return (
       <Box
         display="flex"
@@ -285,7 +326,10 @@ export const SignUpForm = () => {
     email: yup
       .string("Enter your email")
       .email("Enter a valid email")
-      .required("Email is required"),
+      .required("Email is required")
+      .test("domain", "Enter SFIT email", (value) => {
+        return value && value.endsWith("@student.sfit.ac.in");
+      }),
     password: yup
       .string("Enter your password")
       .required("Password is required"),
@@ -310,6 +354,7 @@ export const SignUpForm = () => {
     });
 
     setDoc(doc(fireDB, "users", user.uid), {
+      photo: responseData.image,
       email: user.email,
       name: responseData.name,
       department: responseData.department,

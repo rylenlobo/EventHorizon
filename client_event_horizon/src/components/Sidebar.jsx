@@ -44,15 +44,6 @@ export default function Sidebar({ toggleClose, isOpen }) {
     >
       {user ? (
         <List>
-          <ListItem sx={{ pb: 0 }}>
-            <ListItemAvatar>
-              <Avatar
-                sx={{ width: 80, height: 80 }}
-                alt={user.displayName ?? "Name"}
-                src={user.photoURL ?? ""}
-              />
-            </ListItemAvatar>
-          </ListItem>
           <ListItem disablePadding sx={{ px: 2 }}>
             <ListItemText
               primary={

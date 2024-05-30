@@ -123,6 +123,7 @@ function CustomForm() {
   }, [user]);
 
   if (!loading) {
+    console.log(data.form);
     const survey = new Model(data.form);
     survey.data = feildvalues;
     survey.applyTheme(themeJson);
@@ -138,7 +139,10 @@ function CustomForm() {
           param.eventid,
           data.event_image,
           data.college + "|" + data.venue,
-          data.date,
+          (data.date ? data.date.startDate : "N/A") +
+            (data.date && data.date.startDate !== data.date.endDate
+              ? " - " + data.date.endDate
+              : ""),
           data.time.start + " - " + data.time.end,
           sender.data
         );

@@ -24,6 +24,7 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import { collection, query, where } from "firebase/firestore";
 import { fireDB } from "../firebase/firbaseConfig";
 import { TransitionGroup } from "react-transition-group";
+import NoResultsFound from "../components/NoResultsFound";
 
 const Events = () => {
   const { isOpen, setIsOpen, state, setState, filter, setFilter } =
@@ -167,20 +168,31 @@ const Events = () => {
               </>
             ) : (
               <TransitionGroup>
-                {events.docs.map((doc) => (
-                  <Fade key={doc.id}>
-                    <Box
-                      p={2}
-                      display={{ xs: "flex", md: "none" }}
-                      flexDirection="column"
-                      alignItems="center"
-                      justifyContent="center"
-                      gap={3}
-                    >
-                      <EventCard id={doc.id} props={doc.data()} />
-                    </Box>
-                  </Fade>
-                ))}
+                {events.docs.length === 0 ? (
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    style={{ height: "70vh" }} // Adjust as needed
+                  >
+                    <NoResultsFound />
+                  </Box>
+                ) : (
+                  events.docs.map((doc) => (
+                    <Fade key={doc.id}>
+                      <Box
+                        p={2}
+                        display={{ xs: "flex", md: "none" }}
+                        flexDirection="column"
+                        alignItems="center"
+                        justifyContent="center"
+                        gap={3}
+                      >
+                        <EventCard id={doc.id} props={doc.data()} />
+                      </Box>
+                    </Fade>
+                  ))
+                )}
               </TransitionGroup>
             )}
           </Box>

@@ -11,6 +11,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
 import { PrivacyScreen } from "@capacitor-community/privacy-screen";
+import NeedToLogin from "../components/NeedToLogin";
 
 const enable = async () => {
   await PrivacyScreen.enable();
@@ -36,6 +37,21 @@ const Passes = () => {
       <>
         <Box>
           <EPassSkeleton />
+        </Box>
+      </>
+    );
+  }
+
+  if (!user) {
+    return (
+      <>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          style={{ height: "80vh" }} // Adjust as needed
+        >
+          <NeedToLogin />
         </Box>
       </>
     );

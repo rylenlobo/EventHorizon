@@ -5,8 +5,8 @@ export const signUpContext = createContext(null);
 
 const SignUpContext = ({ children }) => {
   const [stepCount, setStepCount] = useState(1);
-
   const [responseData, setResponseData] = useState("");
+  const [responseError, setResponseError] = useState(null);
 
   return (
     <signUpContext.Provider
@@ -15,6 +15,8 @@ const SignUpContext = ({ children }) => {
         setStepCount,
         responseData,
         setResponseData,
+        responseError,
+        setResponseError,
       }}
     >
       {children}

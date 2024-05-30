@@ -38,13 +38,16 @@ const EventCard = ({ id, props }) => {
               />
             </Box>
             <Typography variant="caption" color="text.grey">
-              {props.day +
+              {props?.day +
                 ", " +
-                props.date +
+                (props.date ? props.date.startDate : "N/A") +
+                (props.date && props?.date.startDate !== props.date.endDate
+                  ? " - " + props.date.endDate
+                  : "") +
                 ", " +
-                props.time.start +
-                " - " +
-                props.time.end}
+                (props?.time.start === props?.time.end
+                  ? props?.time.start
+                  : props?.time.start + " - " + props?.time.end)}
             </Typography>
             <Typography
               variant="h6"

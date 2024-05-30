@@ -200,10 +200,12 @@ const ScanPass = () => {
             width="100%"
           >
             <Avatar
-              src={""}
+              src={
+                userData.photo ? `data:image/jpeg;base64,${userData.photo}` : ""
+              }
               sx={{ width: 100, height: 100, m: 2 }}
               imgProps={{ style: { objectFit: "cover" } }}
-            />
+            />{" "}
           </Box>
           <Box display="flex" alignItems="center" p={2} gap={2}>
             <Box

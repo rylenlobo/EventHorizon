@@ -3,8 +3,11 @@ import { Box, Avatar, Typography, Skeleton } from "@mui/material";
 import NavigateNextRoundedIcon from "@mui/icons-material/NavigateNextRounded";
 import "swiper/css";
 import "swiper/css/autoplay";
+import { useNavigate } from "react-router-dom";
 
 const Committees = ({ props }) => {
+  const navigate = useNavigate();
+
   return (
     <Box
       display="flex"
@@ -16,6 +19,9 @@ const Committees = ({ props }) => {
       borderRadius={2}
       height={50}
       p={2}
+      onClick={() => {
+        navigate(`committees/${props.acronym}`);
+      }}
     >
       <Avatar
         src={props.imageUrl ?? ""}

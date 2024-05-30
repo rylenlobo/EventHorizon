@@ -17,6 +17,7 @@ import { auth, fireDB } from "../firebase/firbaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { TransitionGroup } from "react-transition-group";
 import { useState, useEffect } from "react";
+import NeedToLogin from "../components/NeedToLogin";
 
 const PaymentsAndRegistration = () => {
   const [user] = useAuthState(auth);
@@ -34,7 +35,14 @@ const PaymentsAndRegistration = () => {
   if (!user) {
     return (
       <>
-        <div>You need to login</div>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          style={{ height: "80vh" }} // Adjust as needed
+        >
+          <NeedToLogin />
+        </Box>
       </>
     );
   }
@@ -77,6 +85,9 @@ const PaymentsAndRegistration = () => {
                                 fontWeight: 600,
                                 fontSize: 20,
                                 width: 200,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
                               },
                               "& .MuiListItemText-secondary": {
                                 fontWeight: 600,

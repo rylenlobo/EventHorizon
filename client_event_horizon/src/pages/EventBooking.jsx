@@ -34,6 +34,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { redirectPaymentGateway } from "../../services/razorpayService";
 import { useEffect, useState } from "react";
 import CryptoJS from "crypto-js";
+import NeedToLogin from "../components/NeedToLogin";
 
 const EventDetails = ({ props }) => {
   return (
@@ -43,7 +44,15 @@ const EventDetails = ({ props }) => {
           <ListItemIcon>
             <InsertInvitationRoundedIcon />
           </ListItemIcon>
-          <ListItemText>{props.date}</ListItemText>
+          <ListItemText>
+            {props.date
+              ? props.date.startDate +
+                (props.date.endDate &&
+                props.date.startDate !== props.date.endDate
+                  ? " - " + props.date.endDate
+                  : "")
+              : "N/A"}
+          </ListItemText>
         </ListItem>
         <ListItem disablePadding>
           <ListItemIcon>
@@ -67,13 +76,6 @@ const EventDetails = ({ props }) => {
 const BuyNow = ({ props, id, uid }) => {
   const param = useParams();
   const [user] = useAuthState(auth);
-  // const [uid, setUid] = useState(" ");
-
-  // useEffect(() => {
-  //   if (user) {
-  //     setUid(user.uid);
-  //   }
-  // }, [user]);
 
   const [data, loading] = useCollection(
     query(
@@ -139,7 +141,13 @@ const BuyNow = ({ props, id, uid }) => {
                 user: uid,
                 event_image: props.event_image,
                 event_name: props.event_name,
-                event_date: props.date,
+                event_date: props.date
+                  ? props.date.startDate +
+                    (props.date.endDate &&
+                    props.date.startDate !== props.date.endDate
+                      ? " - " + props.date.endDate
+                      : "")
+                  : "N/A",
                 event_time: props.time.start + " - " + props.time.end,
                 event_venue: props.college + " | " + props.venue,
                 qrcode: CryptoJS.SHA256(
@@ -148,7 +156,13 @@ const BuyNow = ({ props, id, uid }) => {
                     user: uid,
                     event_image: props.event_image,
                     event_name: props.event_name,
-                    event_date: props.date,
+                    event_date: props.date
+                      ? props.date.startDate +
+                        (props.date.endDate &&
+                        props.date.startDate !== props.date.endDate
+                          ? " - " + props.date.endDate
+                          : "")
+                      : "N/A",
                     event_time: props.time.start + " - " + props.time.end,
                     event_venue: props.college + " | " + props.venue,
                   })
@@ -164,7 +178,13 @@ const BuyNow = ({ props, id, uid }) => {
                       user: uid,
                       event_image: props.event_image,
                       event_name: props.event_name,
-                      event_date: props.date,
+                      event_date: props.date
+                        ? props.date.startDate +
+                          (props.date.endDate &&
+                          props.date.startDate !== props.date.endDate
+                            ? " - " + props.date.endDate
+                            : "")
+                        : "N/A",
                       event_time: props.time.start + " - " + props.time.end,
                       event_venue: props.college + " | " + props.venue,
                     })
@@ -201,7 +221,10 @@ const BuyNow = ({ props, id, uid }) => {
               param.eventid,
               props.event_image,
               props.college + "|" + props.venue,
-              props.date,
+              (props.date ? props.date.startDate : "N/A") +
+                (props.date && props?.date.startDate !== props.date.endDate
+                  ? " - " + props.date.endDate
+                  : ""),
               props.time.start + " - " + props.time.end
             );
 
@@ -226,6 +249,21 @@ const EventBooking = () => {
   console.log(data);
   if (loading) {
     return <EventBookingSkeleton />;
+  }
+
+  if (!user) {
+    return (
+      <>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          style={{ height: "80vh" }} // Adjust as needed
+        >
+          <NeedToLogin />
+        </Box>
+      </>
+    );
   }
 
   return (

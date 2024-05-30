@@ -28,6 +28,7 @@ import PaymentsAndRegistration from "./pages/PaymentsAndRegistration";
 import ScanPass from "./pages/ScanPass";
 import { useEffect } from "react";
 import { setDoc } from "firebase/firestore";
+import CommitteeEvents from "./pages/CommitteeEvents";
 
 defineCustomElements(window);
 
@@ -87,6 +88,10 @@ const router = createBrowserRouter([
       {
         path: "scan",
         element: <ScanPass />,
+      },
+      {
+        path: "committees/:name",
+        element: <CommitteeEvents />,
       },
     ],
   },
