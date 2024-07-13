@@ -9,7 +9,7 @@ export const createRazorpayOrder = (param) =>
 
 export const payWithRazorpay = async (param) => {
   const options = {
-    key: "rzp_test_NqTeCveAfsxaRq",
+    key: "",
     amount: (param.amount * 100).toString(),
     currency: "INR",
     order_id: param.order_id, // Use the order ID from the response
